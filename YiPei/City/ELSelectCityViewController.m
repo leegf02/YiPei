@@ -283,7 +283,7 @@
         if (indexPath.section == 0) {
             NSString *cid = nil;
             for (NSDictionary *dic in _eCityitemarray) {
-                if ([_eCityPinyin isEqualToString:[dic objectForKey:@"region_name"]]) {
+                if ([[dic objectForKey:@"region_name"] rangeOfString:_eCityPinyin].location != NSNotFound) {
                     cid = [dic objectForKey:@"region_id"];
                 }
             }
@@ -304,7 +304,7 @@
         else if(indexPath.section==1)
         {
             NSDictionary *city = [_eCityitemarray objectAtIndex:indexPath.row];
-//            [userdb addCityInfo:[city objectForKey:@"region_id"] cityName:[city objectForKey:@"region_name"]];
+            [userdb addCityInfo:[city objectForKey:@"region_id"] cityName:[city objectForKey:@"region_name"]];
             [[AppDelegate shsharedeApp] citySelected];
             [userDataManager sharedUserDataManager].cityID = [city objectForKey:@"region_id"];
             [userDataManager sharedUserDataManager].cityName = [city objectForKey:@"region_name"];

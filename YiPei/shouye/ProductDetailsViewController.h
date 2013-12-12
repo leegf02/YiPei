@@ -12,6 +12,7 @@
 @class goodInfoDetailFunc;
 @class GoodsInfo;
 @class searchFunc;
+@class UIHTTPImageView;
 
 @interface ProductDetailsViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate,dataGoodsInfoProcessProtocol,dataSearchGoodsByBarCodeProcessProtocol>
 {
@@ -20,6 +21,7 @@
     GoodsInfo *info;
     NSString *barcode;
     searchFunc *searchfunc;
+    int intBuyNum;
 }
 
 
@@ -31,6 +33,7 @@
 @property(nonatomic,strong)IBOutlet UIScrollView *imageScroll;
 @property(nonatomic,strong)IBOutlet UIButton *leftImageBT;
 @property(nonatomic,strong)IBOutlet UIButton *rightImageBT;
+@property(nonatomic,strong)IBOutlet UIHTTPImageView *imageOri;
 
 @property(nonatomic,strong)IBOutlet UIView *infoView;
 @property(nonatomic,strong)IBOutlet UILabel *nameLabel;

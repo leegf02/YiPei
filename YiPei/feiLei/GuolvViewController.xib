@@ -9,7 +9,6 @@
             <connections>
                 <outlet property="choseCarButton" destination="Twc-Kv-Up5" id="PZN-R1-gu6"/>
                 <outlet property="filterScrollView" destination="EHd-dx-OeU" id="Qj8-no-xcJ"/>
-                <outlet property="headNav" destination="xN2-go-jCK" id="v9E-5y-AVX"/>
                 <outlet property="lineView" destination="i3O-Z3-BF5" id="Z6z-PB-xhv"/>
                 <outlet property="typeTableView" destination="RAw-df-dcE" id="If0-So-Qfg"/>
                 <outlet property="universalButton" destination="5tb-0L-IbE" id="qPQ-gA-JH3"/>
@@ -23,13 +22,8 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="xN2-go-jCK" customClass="UINavigationView">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                </view>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="EHd-dx-OeU">
-                    <rect key="frame" x="0.0" y="44" width="320" height="568"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="RAw-df-dcE">

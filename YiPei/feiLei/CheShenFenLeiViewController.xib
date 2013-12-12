@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1280" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
@@ -9,7 +9,6 @@
             <connections>
                 <outlet property="carButton" destination="Lxr-kb-HkB" id="o5E-Z2-wga"/>
                 <outlet property="carImageView" destination="4aJ-LV-hXQ" id="b0I-Hx-j0k"/>
-                <outlet property="headNav" destination="JG2-kw-HUw" id="IHs-tR-02F"/>
                 <outlet property="suvButton" destination="WoV-p0-gNB" id="XJk-00-CNH"/>
                 <outlet property="view" destination="1" id="3"/>
                 <outletCollection property="buttonArray" destination="DHs-KM-0Pi" collectionClass="NSMutableArray" id="P82-BA-DMq"/>
@@ -23,11 +22,6 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="JG2-kw-HUw" customClass="UINavigationView">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
                 <view contentMode="scaleToFill" id="qtW-7M-71I">
                     <rect key="frame" x="0.0" y="44" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

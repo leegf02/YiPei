@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1280" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
@@ -15,24 +15,31 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="BoW-vK-egZ">
-                        <rect key="frame" x="27" y="13" width="165" height="43"/>
+                        <rect key="frame" x="27" y="13" width="75" height="43"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="UpAccessory.png" id="ieB-3f-9q6">
-                        <rect key="frame" x="281" y="29" width="18" height="7"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="icon_arrow1_up.png" id="ieB-3f-9q6">
+                        <rect key="frame" x="281" y="29" width="11" height="11"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9cK-lo-6iy">
+                        <rect key="frame" x="110" y="13" width="108" height="43"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
             </tableViewCellContentView>
             <connections>
                 <outlet property="arrowImageView" destination="ieB-3f-9q6" id="VMg-cE-4Lf"/>
+                <outlet property="selectNameLab" destination="9cK-lo-6iy" id="G6T-zN-0GE"/>
                 <outlet property="titleLabel" destination="BoW-vK-egZ" id="Hqd-hi-25I"/>
             </connections>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="UpAccessory.png" width="18" height="10"/>
+        <image name="icon_arrow1_up.png" width="11" height="11"/>
     </resources>
 </document>

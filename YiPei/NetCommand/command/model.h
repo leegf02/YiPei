@@ -505,14 +505,19 @@
 //@end
 
 //14 本地购物车 数据结构（数据库）
-@interface addGoods2Cart : NSObject
+@interface Goods2Cart : NSObject
 {
     NSString *goodsId;      //  商品id integer
+    NSString *goodName;
+    NSString *goodPrice;
     NSString *goodsNumber;  // 商品数量    integer
+    NSString *goodCity;
 }
 @property(nonatomic, retain) NSString *goodsId;
+@property(nonatomic, retain) NSString *goodName;
+@property(nonatomic, retain) NSString *goodPrice;
 @property(nonatomic, retain) NSString *goodsNumber;
-
+@property(nonatomic, retain) NSString *goodCity;
 @end
 
 //15 提交订单
@@ -722,15 +727,61 @@
 //@property(nonatomic, retain) NSString *uid;
 //@end
 
-@interface myProfile : NSObject
+
+
+@interface clientInfo : NSObject
 {
-    NSArray *clients_info;
-    NSArray *user_list;
+    NSString* name;//	=> "商户名称"
+    NSString* logo;//	=> "商户LOGO"
+    NSString* addr;//	=> "商户地址"
+    NSString* contact;//	=> "联系人"
+    NSString* tel;//		=> "固定电话"
+    NSString* mobile;//	=> "手机号"
 }
-@property(nonatomic, retain) NSArray *clients_info;
-@property(nonatomic, retain) NSArray *user_list;
+@property(nonatomic, retain) NSString *name;
+@property(nonatomic, retain) NSString *logo;
+@property(nonatomic, retain) NSString *addr;
+@property(nonatomic, retain) NSString *contact;
+@property(nonatomic, retain) NSString *tel;
+@property(nonatomic, retain) NSString *mobile;
 @end
 
+
+
+@interface userProfileInfo : NSObject
+{
+    NSString* user_id;
+    NSString* user_name;
+    NSString* level;
+    NSString* rank_points;
+}
+@property(nonatomic, retain) NSString *user_id;
+@property(nonatomic, retain) NSString *user_name;
+@property(nonatomic, retain) NSString *level;
+@property(nonatomic, retain) NSString *rank_points;
+@end
+
+@interface clientCredit : NSObject
+{
+    NSString* level;
+    NSString* amounts;
+}
+@property(nonatomic, retain) NSString *level;
+@property(nonatomic, retain) NSString *amounts;
+@end
+
+
+@interface myProfile : NSObject
+{
+    clientInfo *clients_info;
+    userProfileInfo *user_pro_info;
+    clientCredit *client_credit;
+}
+@property(nonatomic, retain) clientInfo *clients_info;
+@property(nonatomic, retain) userProfileInfo *user_pro_info;
+@property(nonatomic, retain) clientCredit *client_credit;
+
+@end
 //个人中心首页
 //@interface profileIndexQuery : NSObject
 //{
@@ -741,23 +792,32 @@
 //@property(nonatomic, retain) NSString *uid;
 //@end
 
-@interface myProfileIndex : NSObject
+@interface myUsrInfoByPid : NSObject
 {
-    NSString *name;     //门店名称
-    NSString *logo;     //门店LOGO
-    NSString *country;  //国家
-    NSString *province; //省份
-    NSString *city;     //城市
-    NSString *district; //区域
-    NSString *addr;      //详细地址
+    NSString *user_id   ;// 会员id
+    NSString *user_name ;//  会员用户名
+    NSString *client_id ;//  会员所在门店id
+    NSString *city      ;//    会员所在门店所在城市
+    NSString *company_name  ;// 门店名称
+    NSString *company_logo  ;//   门店logo
+    NSString *province      ;//     会员所在门店所在省份
+    NSString *district      ;//     会员所在门店所在区域
+    NSString *company_addres;// 门店详情（街道）地址
+    NSString *mobile        ;//          会员手机号
+    NSString *contact       ;//       门店联系人
 }
-@property(nonatomic, retain) NSString *name;
-@property(nonatomic, retain) NSString *logo;
-@property(nonatomic, retain) NSString *country;
-@property(nonatomic, retain) NSString *province;
+@property(nonatomic, retain) NSString *user_id;
+@property(nonatomic, retain) NSString *user_name;
+@property(nonatomic, retain) NSString *client_id;
 @property(nonatomic, retain) NSString *city;
+@property(nonatomic, retain) NSString *company_name;
+@property(nonatomic, retain) NSString *company_logo;
+@property(nonatomic, retain) NSString *province;
 @property(nonatomic, retain) NSString *district;
-@property(nonatomic, retain) NSString *addr;
+@property(nonatomic, retain) NSString *company_addres;
+@property(nonatomic, retain) NSString *mobile;
+@property(nonatomic, retain) NSString *contact;
+
 @end
 
 @interface MyCredit : NSObject
@@ -808,4 +868,27 @@
 
 @property(nonatomic, retain) NSString *cName;
 @property(nonatomic, retain) NSString *cID;
+@end
+
+
+@interface MyVerify : NSObject
+{
+    NSString *companyName;
+    NSString *province;
+    NSString *city;
+    NSString *district;
+    NSString *companyAddress;
+    NSString *mobile;
+    NSString *contact;
+    NSString *code;
+}
+@property(nonatomic, retain) NSString *companyName;
+@property(nonatomic, retain) NSString *province;
+@property(nonatomic, retain) NSString *city;
+@property(nonatomic, retain) NSString *cID;
+@property(nonatomic, retain) NSString *district;
+@property(nonatomic, retain) NSString *companyAddress;
+@property(nonatomic, retain) NSString *mobile;
+@property(nonatomic, retain) NSString *contact;
+@property(nonatomic, retain) NSString *code;
 @end

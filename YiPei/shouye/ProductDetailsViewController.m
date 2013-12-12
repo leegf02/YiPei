@@ -5,7 +5,8 @@
 //  Created by lixiaoxiao on 13-11-24.
 //  Copyright (c) 2013年 lee. All rights reserved.
 //
-
+#import "allConfig.h"
+#import "UIHTTPImageView.h"
 #import "ProductDetailsViewController.h"
 #define SPECIFICATIONTABLE_TAG 1001
 #define INFORMATIONTABLE_TAG 1002
@@ -20,6 +21,10 @@
 
 #import "goodInfoDetailFunc.h"
 #import "searchFunc.h"
+#import "userInfo.h"
+#import "userDataManager.h"
+
+#import "JieSuanZhiFuViewController.h"
 
 @interface ProductDetailsViewController (){
     float scrollheight;
@@ -42,6 +47,9 @@
 @synthesize imageView=_imageView;
 @synthesize imageBackView=_imageBackView;
 @synthesize imageScroll=_imageScroll;
+
+@synthesize imageOri=_imageOri;
+
 @synthesize leftImageBT=_leftImageBT;
 @synthesize rightImageBT=_rightImageBT;
 
@@ -74,6 +82,8 @@
 
 @synthesize isOpen,selectIndex;
 
+@synthesize info=_info;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -87,7 +97,23 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    if (_pid) {
+//         _pid = @"34";
+        _goodInfoFunc = [[goodInfoDetailFunc alloc] init];
+        _goodInfoFunc.delegate = self;
+        [_goodInfoFunc getGoodInfoDetail:_pid];
+    }
+    else if(_barcode)
+    {
+        _barcode = @"6Q02010511";
+        _searchfunc = [[searchFunc alloc] init];
+        _searchfunc.delegateBarcode = self;
+        [_searchfunc getSearchBarcode:_barcode];
+    }
+    AppDelegate *app=[AppDelegate shsharedeApp];
+    [app.tabBarController hideCustomTabBar];
+    intBuyNum = 1;
+    _gouMaiNum.text = [[NSString alloc]initWithFormat:@"%d",intBuyNum];
 
 }
 
@@ -120,12 +146,33 @@
     _info.volume_price = [data objectForKey:@"volume_price"];
     _info.goods_car = [data objectForKey:@"goods_car"];
     
+    
+    
     _info.service_after_title = [data objectForKey:@"service_after_title"];
     _info.service_after_content = [data objectForKey:@"service_after_content"];
     _info.slogan_title = [data objectForKey:@"slogan_title"];
     _info.slogan_content = [data objectForKey:@"slogan_content"];
     _info.goods_gallery = [data objectForKey:@"goods_gallery"];
     
+    NSString *urlstring =[[NSString alloc] initWithFormat:@"http://%@/%@",IMAGE_SERVER_ADDR,_info.original_img];
+    NSLog(@"urlstring=%@",urlstring);
+    [_imageOri setImageWithURL:[NSURL URLWithString:urlstring]];
+    
+    NSString *thumbstring =[[NSString alloc] initWithFormat:@"http://%@/%@",IMAGE_SERVER_ADDR,_info.goods_thumb];
+    
+    [[userDataManager sharedUserDataManager] downImageWithURL:thumbstring PID:_info.goods_id];
+    
+//    _imageScroll.indicatorStyle=UIScrollViewIndicatorStyleBlack;
+//    _imageScroll.delegate=self;
+//    _imageScroll.directionalLockEnabled = YES;
+//    _imageScroll.scrollEnabled = YES;
+//    _imageScroll.backgroundColor = [UIColor clearColor];
+//    _imageScroll.showsVerticalScrollIndicator = NO;
+//    _imageScroll.showsHorizontalScrollIndicator = NO;
+//    [_imageScroll setContentSize:CGSizeMake(320, 210)];
+//    [_imageScroll setContentOffset:CGPointMake(0, 0)];
+//    [_imageScroll addSubview:iv];
+
     _nameLabel.text = _info.goods_name;
     _jianJieLabel.text = _info.goods_brief;
     _NowPrice.text = _info.min_price;
@@ -146,10 +193,7 @@
 //    }
     
     _guiGeArray = _info.goods_attrs;
-    sheHeCheXingArray = _info.goods_car;
-    
-    AppDelegate *app=[AppDelegate shsharedeApp];
-    [app.tabBarController hideCustomTabBar];
+    NSArray *car = _info.goods_car;
     scrollheight=448;
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
 //        self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -189,8 +233,20 @@
     _detailedTable.rowHeight=40.f;
     _detailedTable.scrollEnabled=NO;
     _detailedTable.backgroundColor=[UIColor clearColor];
+    
+    NSDictionary *diccar = [NSDictionary dictionaryWithObjectsAndKeys:car, @"0", nil];
+    
+    NSArray *arrayserivce = [[NSArray alloc]initWithObjects:_info.service_after_title, nil];
+    NSDictionary *dicservice = [NSDictionary dictionaryWithObjectsAndKeys:arrayserivce, @"1", nil];
+    
+    NSArray *arrayslogan = [[NSArray alloc]initWithObjects:_info.slogan_title, nil];
+    NSDictionary *dicslogan = [NSDictionary dictionaryWithObjectsAndKeys:arrayslogan, @"2", nil];
+
+    sheHeCheXingArray = [[NSArray alloc]initWithObjects:diccar,dicservice,dicslogan, nil];
+
     infoArray=[[NSArray alloc]initWithObjects:@"适用车型",_info.service_after_title,_info.slogan_title, nil];
     [_detailedTable reloadData];
+    
     scrollheight=scrollheight+_detailedTable.frame.size.height+10;
     
     //    _butView.frame=CGRectMake(0, scrollheight, 320, 45);
@@ -199,14 +255,19 @@
     _contenrBack.frame=CGRectMake(0, 0, 320, scrollheight);
     BackY=_contenrBack.frame.origin.y;
     
-    [_ContenrScroll setContentSize:CGSizeMake(320,scrollheight+100)];
+    [_ContenrScroll setContentSize:CGSizeMake(320,scrollheight)];
+    [_ContenrScroll setFrame:CGRectMake(0,23, 320,[[UIScreen mainScreen] bounds].size.height-45-23-45)];
     [_ContenrScroll addSubview:_imageView];
     [_ContenrScroll addSubview:_infoView];
     [_ContenrScroll addSubview:_guiGeView];
     [_ContenrScroll addSubview:_detailedTable];
     
     float height=[[UIScreen mainScreen] bounds].size.height;
-    _butView.frame=CGRectMake(0, height-45-45-20, 320, 45);
+//    if (height==480) {
+         _butView.frame=CGRectMake(0, height-45-45, 320, 45);
+//    }else{
+//         _butView.frame=CGRectMake(0, height-45, 320, 45);//模拟器是可以的 你在真机上把这个后面的减20去掉试试
+//    }
     [self.view addSubview:_butView];
 
 }
@@ -220,25 +281,18 @@
 {
     [super viewDidLoad];
     
-    if (_pid) {
-        _goodInfoFunc = [[goodInfoDetailFunc alloc] init];
-        _goodInfoFunc.delegate = self;
-        [_goodInfoFunc getGoodInfoDetail:_pid];
-    }
-    else if(_barcode)
-    {
-        _barcode = @"6Q02010511";
-        _searchfunc = [[searchFunc alloc] init];
-        _searchfunc.delegateBarcode = self;
-        [_searchfunc getSearchBarcode:_barcode];
-    }
+}
 
+- (void)viewDidUnload
+{
+    
+    [super viewDidUnload];
     
 }
 
 - (void) didSearchGoodsByBarCodeDataSuccess : (id)data
 {
-    [self didGoodsInfoDataFailed:data];
+    [self didGoodsInfoDataSuccess:data];
 }
 
 - (void) didSearchGoodsByBarCodeDataFailed : (NSString *)err
@@ -284,23 +338,52 @@
 //降价通知
 -(IBAction)clickjianJiaBT:(id)sender{
     JiangJiaTongZhiViewController *jiangJiaVC=[[JiangJiaTongZhiViewController alloc]initWithNibName:@"JiangJiaTongZhiViewController" bundle:nil];
+    jiangJiaVC.price = _info.min_price;
+    jiangJiaVC.pid = _info.goods_id;
     [self.navigationController pushViewController:jiangJiaVC animated:YES];
 }
 //减数量
 -(IBAction)clickJianNumBT:(id)sender{
-
+    if (intBuyNum>0) {
+        intBuyNum--;
+        _gouMaiNum.text = [[NSString alloc]initWithFormat:@"%d",intBuyNum];
+    }
 }
 //加数量
 -(IBAction)clickJiaNumBT:(id)sender{
-
+    intBuyNum++;
+    _gouMaiNum.text = [[NSString alloc]initWithFormat:@"%d",intBuyNum];
 }
 //立即购买
 -(IBAction)clickGouMaiBT:(id)sender{
-
+    JieSuanZhiFuViewController *jiesuan = [[JieSuanZhiFuViewController alloc]initWithNibName:@"JieSuanZhiFuViewController" bundle:nil];
+    [self.navigationController pushViewController:jiesuan animated:YES];
+    
 }
 //加入购物车
 -(IBAction)clickJoinShoppingCartBT:(id)sender{
+    Goods2Cart *goods = [[Goods2Cart alloc] init];
+    goods.goodsId = _info.goods_id;
+    goods.goodName = _info.goods_name;
+    goods.goodPrice = _info.min_price;
+    goods.goodsNumber = _gouMaiNum.text;
+    goods.goodCity = [userDataManager sharedUserDataManager].cityID;
+    userInfo *db = [[userInfo alloc] init];
+    [db addToCartDB:goods];
+    for (int i= 0; i<_info.volume_price.count; i++) {
+        volumePrice *vol = [[volumePrice alloc] init];
+        vol.volume_number = [[_info.volume_price objectAtIndex:i] objectForKey:@"volume_number"];
+        vol.volume_price = [[_info.volume_price objectAtIndex:i] objectForKey:@"volume_price"];
+        vol.volume_number_min = [[_info.volume_price objectAtIndex:i] objectForKey:@"volume_number_min"];
+        vol.supplier_id = [[_info.volume_price objectAtIndex:i] objectForKey:@"supplier_id"];
+        [db addVol2DB:vol PID:pid];
 
+    }
+    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"添加到购物城"
+                                                       message:@"成功"
+                                                      delegate:self cancelButtonTitle:@"确定"otherButtonTitles:nil, nil];
+    [alertView show];
+    
 }
 
 
@@ -311,6 +394,10 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if (tableView.tag==INFORMATIONTABLE_TAG) {
+        if (self.isOpen)
+        {
+            
+        }
         return [infoArray count];
     }
     return 1;
@@ -319,9 +406,20 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (tableView.tag==INFORMATIONTABLE_TAG) {
+//        if (self.isOpen) {
+//            if (self.selectIndex.section == section) {
+//                NSString * rowStr = [NSString stringWithFormat:@"%i",section];
+//                NSMutableDictionary * dic = [sheHeCheXingArray objectAtIndex:section];
+//                NSMutableArray * array = [dic objectForKey:rowStr];
+//                return [array count];;
+//            }
+//        }
         if (self.isOpen) {
             if (self.selectIndex.section == section) {
-                return [sheHeCheXingArray count]+1;;
+                NSString * rowStr = [NSString stringWithFormat:@"%i",section];
+                NSMutableDictionary * dic = [sheHeCheXingArray objectAtIndex:section];
+                NSMutableArray * array = [dic objectForKey:rowStr];
+                return [array count]+1;
             }
         }
         return 1;
@@ -340,6 +438,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (tableView.tag==INFORMATIONTABLE_TAG) {
+        NSLog(@"indexpath=%d",indexPath.row);
         if (self.isOpen&&self.selectIndex.section == indexPath.section&&indexPath.row!=0) {
             static NSString *CellIdentifier = @"Cell2";
             Cell2 *cell = (Cell2*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -347,9 +446,27 @@
             if (!cell) {
                 cell = [[[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:self options:nil] objectAtIndex:0];
             }
-//            NSArray *list = [infoArray objectAtIndex:self.selectIndex.section] ;
-//            NSLog(@"%d",list.count);
-            cell.titleLabel.text = [sheHeCheXingArray objectAtIndex:indexPath.row-1];
+            
+            
+            NSMutableDictionary * dic = [sheHeCheXingArray objectAtIndex:indexPath.section];
+
+
+            if([[dic allKeys] containsObject:@"2"])
+            {
+                NSArray *arr = [dic objectForKey:@"2"];
+                cell.titleLabel.text = [arr objectAtIndex:indexPath.row-1];
+            }
+            else if([[dic allKeys] containsObject:@"1"])
+            {
+                NSArray *arr = [dic objectForKey:@"1"];
+                cell.titleLabel.text = [arr objectAtIndex:indexPath.row-1];
+            }
+            else if([[dic allKeys] containsObject:@"0"])
+            {
+                NSArray *arr = [dic objectForKey:@"0"];
+                NSDictionary *car = [arr objectAtIndex:indexPath.row-1];
+                cell.titleLabel.text = [car objectForKey:@"name"];
+            }
             return cell;
         }else
         {
@@ -391,11 +508,11 @@
         }
         UILabel *canshu=(UILabel *)[cell viewWithTag:1];
         
-        goodsAttr *attr = [_guiGeArray objectAtIndex:indexPath.row];
+        NSDictionary *attr = [_guiGeArray objectAtIndex:indexPath.row];
         
-        canshu.text = attr.attr_name;
+        canshu.text = [attr valueForKey:@"attr_name"];
         UILabel *canshuzhi=(UILabel *)[cell viewWithTag:2];
-        canshuzhi.text=attr.attr_value;
+        canshuzhi.text=[attr valueForKey:@"attr_value"];
         return cell;
     }
     return nil;
@@ -441,7 +558,10 @@
     [_detailedTable beginUpdates];
     
     int section = self.selectIndex.section;
-    int contentCount = [sheHeCheXingArray count];
+    NSString * rowStr = [NSString stringWithFormat:@"%i",section];
+    NSMutableDictionary * dic = [sheHeCheXingArray objectAtIndex:section];
+    NSMutableArray * array = [dic objectForKey:rowStr];
+    int contentCount = [array count];
     if (self.isOpen) {
         [self detailedTableFrame:contentCount];
     }else{
@@ -449,7 +569,7 @@
     }
     
 	NSMutableArray* rowToInsert = [[NSMutableArray alloc] init];
-	for (NSUInteger i = 1; i < contentCount + 1; i++) {
+	for (NSUInteger i = 1; i < contentCount+1; i++) {
 		NSIndexPath* indexPathToInsert = [NSIndexPath indexPathForRow:i inSection:section];
 		[rowToInsert addObject:indexPathToInsert];
 	}
@@ -470,16 +590,6 @@
     if (self.isOpen) [_detailedTable scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionTop animated:YES];
     
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

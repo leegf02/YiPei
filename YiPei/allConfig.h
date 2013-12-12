@@ -17,4 +17,10 @@
 //设备屏幕高
 #define __MainScreen_Height __MainScreenFrame.size.height
 
+#define IMAGE_SERVER_ADDR @"autoparts.360cec.com"
+
+#define ImagePath @"goodsthumb"
+
+#define BILL_ITEM_PER_PAGE @"10"
+
 #endif

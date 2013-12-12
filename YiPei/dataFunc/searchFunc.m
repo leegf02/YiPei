@@ -21,7 +21,15 @@
     NetCommand *command = [[NetCommand alloc] init];
     [command.paramDict setObject:@"CityGoods" forKey:@"m"];
     [command.paramDict setObject:@"searchGoods" forKey:@"a"];
-    [command.paramDict setObject:keyword forKey:@"keyword"];
+    
+    if (keyword) {
+		NSString *stringText = (NSString *) CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+																					(CFStringRef)keyword,
+																					NULL,
+																					CFSTR("!*'();:@&amp;=+$,/?%#[] "),
+																					kCFStringEncodingUTF8));
+        [command.paramDict setObject:stringText forKey:@"keyword"];
+    }
     [command.paramDict setObject:[userDataManager sharedUserDataManager].cityID forKey:@"city"];
 
     [command execute];

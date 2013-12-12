@@ -7,16 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "LeveyTabBarController.h"
 @class shouYeViewController;
 @class fenLeiViewController;
 @class pinPaiViewController;
 @class cheXingViewController;
 @class CustomTabBar;
+@class MyNavigationControllerViewController;
 
 @class  ELSelectCityViewController;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate,UITabBarControllerDelegate,LeveyTabBarControllerDelegate,LeveyTabBarDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,UITabBarControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 //@property (strong, nonatomic) UITabBarController *tabBarController;
@@ -31,6 +31,9 @@
 @property (strong, nonatomic) UINavigationController *pinPaiNavCtrl;
 @property (strong, nonatomic) UINavigationController *cheXingNavCtrl;
 @property (strong, nonatomic) ELSelectCityViewController *selectCity;
+
+@property (strong, nonatomic) MyNavigationControllerViewController *myNavController;
+
 +(AppDelegate *)shsharedeApp;
 
 -(void)citySelected;

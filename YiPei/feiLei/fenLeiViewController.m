@@ -16,6 +16,7 @@
 
 #import "FenLeiCell.h"
 #import "FenLeiCell2.h"
+#import "allConfig.h"
 @interface fenLeiViewController ()
 @property (assign)BOOL isOpen;
 @property (nonatomic,retain)NSIndexPath *selectIndex;
@@ -59,7 +60,7 @@
     _feiLFunction = [[fenLeiFunc alloc] init];
     _feiLFunction.delegateGoodsCateByPid = self;
     [_feiLFunction getGoodsCateByPid:@"0"];
-//    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBarHidden = NO;
     
     self.view.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
     
@@ -83,7 +84,7 @@
             dic = [[NSMutableDictionary alloc] init];
             [dic setValue:@"全部分类" forKey:@"name"];
             [_fenLeiDataArray addObject:dic];
-            continue;
+//            continue;
         }
         arry = [[NSMutableArray alloc] init];
         dic = [[NSMutableDictionary alloc] init];
@@ -91,7 +92,13 @@
         [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"cat_name"] forKey:@"name"];
         [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"cat_id"] forKey:@"cat_id"];
         [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"category_img"] forKey:@"category_img"];
-
+        
+[dic setValue:[[cbData objectAtIndex:i] objectForKey:@"category_thumb"] forKey:@"category_thumb"];
+        
+        [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"keywords"] forKey:@"keywords"];
+         [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"original_img"] forKey:@"original_img"];
+         [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"parent_id"] forKey:@"parent_id"];
+         [dic setValue:[[cbData objectAtIndex:i] objectForKey:@"sort_order"] forKey:@"sort_order"];
         [_fenLeiDataArray addObject:dic];
 
     }
@@ -110,48 +117,32 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    [self initLeftBarButtonItem];
-    [self initRightBarButtonItem];
-   
+//    [self initLeftBarButtonItem];
+//    [self initRightBarButtonItem];
+    _headNav = [[UINavigationView alloc] init];
+    self.navigationItem.leftBarButtonItem=[self setLeftBarButtonItem];
+    self.navigationItem.rightBarButtonItem=[self setRightBarButtonItem];
     
 
 }
--(void)initLeftBarButtonItem{
+-(UIBarButtonItem*)setLeftBarButtonItem{
+    return [_headNav setWithLeftBarItemWithFrame:CGRectMake(10, 7, 50, 30)  withAction:@selector(backToFeileiView) withButtonImage:[UIImage imageNamed:@"topbtn_back_press.png"] withHighlighted:nil withTarget:self];
     
-     [_headNav initWithLeftBarItemWithTitle:@"" withFrame:CGRectMake(10, 7, 30, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"btn_car.png"] withHighlighted:nil withTarget:self];
     
-//    UIButton * leftButton = [[UIButton alloc] init];
-//    leftButton.frame = CGRectMake(10,7, 30, 30);
-//
-//    [leftButton setBackgroundImage:[UIImage imageNamed:@"btn_car.png"] forState:UIControlStateNormal];
-//    [leftButton addTarget:self action:@selector(leftBarItemClick) forControlEvents:UIControlEventTouchDown];
-//    UIBarButtonItem * leftBarItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton ];
-//   
-//   
-//    
-//    self.navigationItem.leftBarButtonItem = leftBarItem;
-//    
+    
 }
+-(UIBarButtonItem*)setRightBarButtonItem{
+    return [_headNav setWithRightBarItemWithFrame:CGRectMake(10, 7, 30, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"btn_car.png"] withHighlighted:nil withTarget:self];
+    
+    
+    
+}
+
 -(void)leftBarItemClick{
     CheShenFenLeiViewController * cheshenView = [[CheShenFenLeiViewController alloc] init];
     [self.navigationController pushViewController:cheshenView animated:YES];
 }
--(void)initRightBarButtonItem{
 
-    [_headNav initWithRightBarItemWithTitle:@"" withFrame:CGRectMake(280,7, 30, 30)  withAction:@selector(rightBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_cart.png"] withHighlighted:nil withTarget:self];
-    
-//    UIButton * rightButton = [[UIButton alloc] init];
-//    rightButton.frame = CGRectMake(280,7, 30, 30);
-//    
-//    [rightButton setBackgroundImage:[UIImage imageNamed:@"topbtn_cart.png"] forState:UIControlStateNormal];
-//    [rightButton addTarget:self action:@selector(rightBarItemClick) forControlEvents:UIControlEventTouchDown];
-//    UIBarButtonItem * rightBarItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton ];
-//    
-//    
-//    
-//    self.navigationItem.rightBarButtonItem = rightBarItem;
-//
-}
 -(void)rightBarItemClick{
     
 }
@@ -244,9 +235,10 @@
         cell.titleLabel.text = name;
         cell.titleLabel.textColor = [UIColor colorWithRed:129/255.0 green:129/255.0 blue:129/255.0 alpha:1.0];
         UIImage * image;
-        NSString *imageurl = [dic objectForKey:@"category_img"];
-        if (![imageurl isEqualToString:@""]) {
-            image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageurl]]];
+         NSString * imageUrl = [[NSString alloc]initWithFormat:@"http://%@/%@",IMAGE_SERVER_ADDR,[dic objectForKey:@"category_thumb"]];
+//        NSString *imageurl = [dic objectForKey:@"category_img"];
+        if (![imageUrl isEqualToString:@""]) {
+            image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]]];
         }
         else
         {
@@ -285,15 +277,20 @@
         
     }else
     {
-//        dd 
-//        NSDictionary *dic = [_fenLeiDataArray objectAtIndex:indexPath.section];
-//        NSArray *list = [dic objectForKey:@"name"];
-//        NSString *item = [list objectAtIndex:indexPath.row-1];
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:item message:nil delegate:nil cancelButtonTitle:@"取消" otherButtonTitles: nil];
-//        [alert show];
-        GuolvViewController * viewC = [[GuolvViewController alloc] init];
+
+        NSString * str = [NSString stringWithFormat:@"%i",indexPath.section+1];
+        NSMutableDictionary * dic = [_fenLeiDataArray objectAtIndex:indexPath.section+1];
+        //         [cell cellBackgroundColor ];
         
-        FenLeiListViewController * listView = [[FenLeiListViewController alloc] init];
+        NSArray *list = [dic objectForKey:str];
+        
+        NSLog(@"%d",indexPath.row-1);
+        //
+        NSDictionary* category = (NSDictionary*)[list objectAtIndex:indexPath.row-1];
+        
+        FenLeiListViewController * listView = [[FenLeiListViewController alloc] initWithNibName:@"FenLeiListViewController" bundle:nil];
+        NSLog(@"[category objectForKey:]=%@",[category objectForKey:@"cat_id"]);
+        listView.categoryId = [category objectForKey:@"cat_id"];
         [self.navigationController pushViewController:listView animated:YES];
         self.selectIndex = nil;
     }

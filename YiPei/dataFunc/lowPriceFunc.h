@@ -2,7 +2,7 @@
 //  lowPriceFunc.h
 //  YiPei
 //
-//  Created by lee on 13-11-26.
+//  Created by lee on 13-12-3.
 //  Copyright (c) 2013年 lee. All rights reserved.
 //
 
@@ -11,16 +11,14 @@
 
 @interface lowPriceFunc : NSObject
 {
-    id<dataLowPriceNotifyProcessProtocol>delegateLowPrice;
-    id<dataUploadImagedProcessProtocol>delegateUpload;
+    id<dataUploadImagedProcessProtocol>delegateUpImage;
+    id<dataLowPriceNotifyProcessProtocol>delegateLow;
 }
 
-@property(nonatomic, retain)id delegateLowPrice;
-@property(nonatomic, retain)id delegateUpload;
+@property(nonatomic, retain) id delegateUpImage;
+@property(nonatomic, retain) id delegateLow;
 
-- (void)getUploadImage:(NSString *)goodsSn;
+-(void)getImagePath:(NSData *)image;
 
-//调用该接口之前必须验证UID是否是空，空则提示验证
-- (void)getLowPriceNotify:(NSString *)goodID SysPrice:(NSString *)sys Price:(NSString *)p Number:(NSString *)num Rebates:(NSString *)bates Imageurl:(NSString *)url;
-
+-(void)getlowPriceNotify:(NSString *)goodID sysPrice:(NSString *)sPrice bugPrice:(NSString *)bPrice buyNo:(NSString *)num buyRebates:(NSString *)bates imagePath:(NSString *)path userID:(NSString *)uid cityID:(NSString *)city;
 @end

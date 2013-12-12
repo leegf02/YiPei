@@ -11,10 +11,13 @@
 @interface UINavigationView : UIView
 
 
+@property(nonatomic, strong) UIButton * leftButton;
+@property(nonatomic, strong) UIButton * rightButton;
 
 
--(void)initWithLeftBarItemWithTitle:(NSString *)title withFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller;
--(void)initWithRightBarItemWithTitle:(NSString *)title withFrame:(CGRect)frame   withAction:(SEL)action  withButtonImage:(UIImage *)image  withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller;
+-(UIBarButtonItem* )setWithLeftBarItemWithFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller;
+
+-(UIBarButtonItem*)setWithRightBarItemWithFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller;
 
 -(void)initWithCenterItemWithTitle:(NSString *)title;
 

@@ -7,14 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "dataProcessProtocol.h"
 
-@interface FenLeiListViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>{
+@class fenLeiFunc;
+
+@interface FenLeiListViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,dataGoodsListProcessProtocol>{
     NSMutableArray * fenLeiListArray;
     NSMutableArray * smallTableArray;
-    
+      fenLeiFunc *feiLFunction;
     BOOL isSort;
 //    BOOL isFilter;
 }
+@property(nonatomic, strong) NSString * categoryId;
+
 @property(nonatomic, strong) IBOutlet UITableView * fenLeiListTableView;
 
 @property(nonatomic, strong) IBOutlet UITableView * smallTableView;

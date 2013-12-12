@@ -32,7 +32,7 @@
     [command execute];
     if (command.errorCode == 0) {
         NSLog(@"todayNewfunc success!");
-        todayNew *htm = (todayNew *)command.data;
+        NSArray *htm = (NSArray *)command.data;
         NSLog(@"htm=%@",htm);
         if (self.delegate &&[self.delegate respondsToSelector:@selector(didTodayNewDataSuccess:)]) {
             [self.delegate performSelector:@selector(didTodayNewDataSuccess:) withObject:htm];

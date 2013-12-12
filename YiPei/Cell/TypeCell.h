@@ -11,7 +11,7 @@
 @interface TypeCell : UITableViewCell
 @property (nonatomic,strong)IBOutlet UILabel *titleLabel;
 @property (nonatomic,strong)IBOutlet UIImageView *arrowImageView;
-
+@property (nonatomic,strong)IBOutlet UILabel * selectNameLab;
 - (void)changeArrowWithUp:(BOOL)up;
 
 @end

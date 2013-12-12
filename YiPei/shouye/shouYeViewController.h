@@ -47,6 +47,11 @@
 @property(nonatomic,strong)IBOutlet UILabel *shouyeLabel;
 @property(nonatomic,strong)IBOutlet UIImageView *shouyeArrow;
 
+@property(nonatomic,strong)IBOutlet UIButton *cityBT;
+@property(nonatomic,strong)IBOutlet UILabel *cityLabel;
+@property(nonatomic,strong)IBOutlet UIImageView *cityImage;
+@property(nonatomic,strong)IBOutlet UIImageView *cityArrow;
+
 @property(nonatomic,strong)IBOutlet UIButton *useBT;
 @property(nonatomic,strong)IBOutlet UILabel *useNameLabel;
 @property(nonatomic,strong)IBOutlet UIImageView *useImage;
@@ -58,6 +63,12 @@
 @property(nonatomic,strong)IBOutlet UIImageView *cartImage;
 @property(nonatomic,strong)IBOutlet UILabel *shoppingCartNumLabel;
 @property(nonatomic,strong)IBOutlet UIView *shoppingCartView;
+
+
+@property(nonatomic,strong)IBOutlet UIButton *debtBT;
+@property(nonatomic,strong)IBOutlet UILabel *debtLabel;
+@property(nonatomic,strong)IBOutlet UIImageView *debtImage;
+@property(nonatomic,strong)IBOutlet UIImageView *debtArrow;
 
 @property(nonatomic,strong)IBOutlet UIView *InfoView;
 @property(nonatomic,strong)IBOutlet UIButton *payBT;
@@ -86,6 +97,7 @@
 @property(nonatomic,strong) todayNew *todayNewData;
 @property(nonatomic,strong) NSMutableArray *todayDisCountArray;
 
+@property(nonatomic,strong) IBOutlet UIScrollView *scrollView;
 //@property(nonatomic, strong) scannerViewController* scanner;
 
 @property(nonatomic, retain) scannerVinViewController *vinVc;
@@ -116,6 +128,10 @@
 -(IBAction)clickContactBT:(id)sender;//联系我们
 
 -(IBAction)clickUpdateBT:(id)sender;//更新
+
+-(IBAction)clickDebtBT:(id)sender;
+-(IBAction)clickCityBT:(id)sender;
+
 //点击按钮视图的变化
 -(void)updateview:(NSInteger)tag;
 

@@ -13,8 +13,11 @@
 #import "TypeClickCell.h"
 
 #import "UINavigationView.h"
+#import "fenLeiFunc.h"
 
-@interface GuolvViewController ()
+@interface GuolvViewController ()<dataFilterAttrByCateProcessProtocol,GuolvListViewControllerDelegate>{
+    fenLeiFunc * feiLFunction;
+}
 @property (assign)BOOL isOpen;
 @property (nonatomic,retain)NSIndexPath *selectIndex;
 
@@ -38,6 +41,7 @@
 @synthesize choseCarButton = _choseCarButton;
 @synthesize universalButton = _universalButton;
 
+@synthesize categoryId =_categoryId;
 
 @synthesize headNav = _headNav;
 @synthesize lineView =_lineView;
@@ -58,99 +62,107 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    selectIndexPathArray = [[NSMutableArray alloc] init ];
     
     self.isOpen = NO;
     selectRow = 0;
     
     typeArray = [[NSMutableArray alloc] init];
-    NSMutableDictionary * dic ;
-    NSMutableArray  * arry;
     
-    arry = [[NSMutableArray alloc] initWithObjects:@"01",@"02",@"03", nil];
-    dic = [[NSMutableDictionary alloc] init];
-    [dic setValue:@"第零" forKey:@"name"];
-    
-    [dic setValue:arry forKey:@"0"];
-    [typeArray addObject:dic];
-    
-    arry = [[NSMutableArray alloc] initWithObjects:@"11",@"12",@"13", nil];
-    dic = [[NSMutableDictionary alloc] init];
-    [dic setValue:arry forKey:@"1"];
-    [dic setValue:@"第一" forKey:@"name"];
-    [typeArray addObject:dic];
-    
-    arry = [[NSMutableArray alloc] initWithObjects:@"21",@"22",@"23", nil];
-    dic = [[NSMutableDictionary alloc] init];
-    [dic setValue:@"第二" forKey:@"name"];
-    
-    [dic setValue:arry forKey:@"2"];
-    [typeArray addObject:dic];
-    
-    arry = [[NSMutableArray alloc] initWithObjects:@"31",@"32",@"33", nil];
-    dic = [[NSMutableDictionary alloc] init];
-    [dic setValue:@"第三" forKey:@"name"];
-    
-    [dic setValue:arry forKey:@"3"];
-    [typeArray addObject:dic];
-    
-    arry = [[NSMutableArray alloc] initWithObjects:@"41",@"42",@"43", nil];
-    dic = [[NSMutableDictionary alloc] init];
-    [dic setValue:@"第四" forKey:@"name"];
-    
-    [dic setValue:arry forKey:@"4"];
-    [typeArray addObject:dic];
-    
-   
-    
+
     
     _typeTableView.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
     _universalTableView.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
 
 //    [_universalTableView reloadData];
-    NSLog(@"typeArray.count==%i",typeArray.count);
+   
     
-    universalArray = [[NSMutableArray alloc]initWithObjects:@"品牌",@"车系",@"车型", nil];
-    _typeTableView.frame = CGRectMake(0, 0, 320, typeArray.count * 64);
+    universalArray = [[NSMutableArray alloc]initWithObjects:@"选择品牌",@"选择车系",@"选择排量",@"选择年款", nil];
+   
+    _headNav = [[UINavigationView alloc] init];
+    self.navigationItem.leftBarButtonItem=[self setLeftBarButtonItem];
+    self.navigationItem.rightBarButtonItem=[self setRightBarButtonItem];
     
-    _universalTableView.frame = CGRectMake(0, 58, 320, universalArray.count *58);
-    _universalView.frame = CGRectMake(0, typeArray.count * 64 , 320, 60 + universalArray.count * 58);
     
-    _universalView.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
-//    _universalTableView.backgroundColor = [UIColor blackColor];
-//217
-    _lineView.backgroundColor = [UIColor colorWithRed:217/255.0 green:217/255.0 blue:217/255.0 alpha:1.0];
+    feiLFunction = [[fenLeiFunc alloc] init];
+    feiLFunction.delegateGoodsBrandByCate = self;
+    [feiLFunction getGoodsBrandByCategory:_categoryId];
+    
+//    
+//    feiLFunction = [[fenLeiFunc alloc] init];
+//    feiLFunction.delegateFilterAtrrByCate = self;
+//    [feiLFunction getFilterAttrByCategory:_categoryId];
+    
 
-    CGSize size = CGSizeMake(320, typeArray.count * 64  + 80 + universalArray.count * 58);
-    [_filterScrollView setContentSize:size];
-    
-    
-    CGRect frameScroll = _filterScrollView.frame;
-    _filterScrollView.frame = CGRectMake(frameScroll.origin.x, frameScroll.origin.y, frameScroll.size.width, frameScroll.size.height-88);
-    
-     [_typeTableView reloadData];
-    [_universalTableView reloadData];
-    
-    [self clickChoseCarButtonNotUniversalButtonImage];
-    [self initLeftBarButtonItem];
-    [self initRightBarButtonItem];
 }
 
--(void)initLeftBarButtonItem{
+-(void)calculateScrollerViewHeight:(NSArray *)array{
+    if (!array) {
+        _typeTableView.frame = CGRectMake(0, 0, 320, typeArray.count * 64);
+        
+        _universalTableView.frame = CGRectMake(0, 58, 320, universalArray.count *58);
+        _universalView.frame = CGRectMake(0, typeArray.count * 64 , 320, 60 + universalArray.count * 58);
+        
+        _universalView.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
+        //    _universalTableView.backgroundColor = [UIColor blackColor];
+        //217
+        _lineView.backgroundColor = [UIColor colorWithRed:217/255.0 green:217/255.0 blue:217/255.0 alpha:1.0];
+        
+        CGSize size = CGSizeMake(320, typeArray.count * 64  + 80 + universalArray.count * 58);
+        [_filterScrollView setContentSize:size];
+        
+        
+        CGRect frameScroll = _filterScrollView.frame;
+        _filterScrollView.frame = CGRectMake(frameScroll.origin.x, frameScroll.origin.y, frameScroll.size.width, frameScroll.size.height);
+        
+        [_typeTableView reloadData];
+        [_universalTableView reloadData];
+        
+        [self clickChoseCarButtonNotUniversalButtonImage];
+
+    }else{
+        
+        _typeTableView.frame = CGRectMake(0, 0, 320, array.count*45 +typeArray.count * 64);
+        
+        _universalTableView.frame = CGRectMake(0, 58, 320, universalArray.count *58);
+        _universalView.frame = CGRectMake(0,array.count*45 +typeArray.count * 64 , 320, 60 + universalArray.count * 58);
+        
+        _universalView.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
+        //    _universalTableView.backgroundColor = [UIColor blackColor];
+        //217
+        _lineView.backgroundColor = [UIColor colorWithRed:217/255.0 green:217/255.0 blue:217/255.0 alpha:1.0];
+        
+        CGSize size = CGSizeMake(320, typeArray.count * 64 +array.count*45  + 80 + universalArray.count * 58);
+        [_filterScrollView setContentSize:size];
+        
+        
+        CGRect frameScroll = _filterScrollView.frame;
+        _filterScrollView.frame = CGRectMake(frameScroll.origin.x, frameScroll.origin.y, frameScroll.size.width, frameScroll.size.height);
+        
+        [_typeTableView reloadData];
+        [_universalTableView reloadData];
+        
+        [self clickChoseCarButtonNotUniversalButtonImage];
+        
+
+        
+    }
     
-         [_headNav initWithLeftBarItemWithTitle:@"" withFrame:CGRectMake(10, 7, 50, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"btn_back_press.png"] withHighlighted:nil withTarget:self];
+    }
+
+-(UIBarButtonItem*)setLeftBarButtonItem{
+    return [_headNav setWithLeftBarItemWithFrame:CGRectMake(10, 7, 50, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"btn_back_press.png"] withHighlighted:nil withTarget:self];
     
-//    UIButton * leftButton = [[UIButton alloc] init];
-//    leftButton.frame = CGRectMake(10,7, 50, 30);
-//    
-//    [leftButton setBackgroundImage:[UIImage imageNamed:@"btn_back_press.png"] forState:UIControlStateNormal];
-//    [leftButton addTarget:self action:@selector(leftBarItemClick) forControlEvents:UIControlEventTouchDown];
-//    UIBarButtonItem * leftBarItem = [[UIBarButtonItem alloc]initWithCustomView:leftButton ];
-//    
-//    
-//    
-//    self.navigationItem.leftBarButtonItem = leftBarItem;
+    
     
 }
+-(UIBarButtonItem*)setRightBarButtonItem{
+    return [_headNav setWithRightBarItemWithFrame:CGRectMake(260,7, 50, 30) withAction:@selector(rightBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_complete.png"] withHighlighted:nil withTarget:self];
+    
+    
+    
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     
@@ -159,23 +171,6 @@
 
 -(void)leftBarItemClick{
     [self.navigationController popViewControllerAnimated:YES];
-    
-}
--(void)initRightBarButtonItem{
-    
-        [_headNav initWithRightBarItemWithTitle:@"" withFrame:CGRectMake(260,7, 50, 30) withAction:@selector(rightBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_complete.png"] withHighlighted:nil withTarget:self];
-    
-    
-//    UIButton * rightButton = [[UIButton alloc] init];
-//    rightButton.frame = CGRectMake(260,7, 50, 30);
-//    
-//    [rightButton setBackgroundImage:[UIImage imageNamed:@"topbtn_complete.png"] forState:UIControlStateNormal];
-//    [rightButton addTarget:self action:@selector(rightBarItemClick) forControlEvents:UIControlEventTouchDown];
-//    UIBarButtonItem * rightBarItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton ];
-//    
-//    
-//    
-//    self.navigationItem.rightBarButtonItem = rightBarItem;
     
 }
 -(void)rightBarItemClick{
@@ -192,10 +187,51 @@
 }
 -(IBAction)clickChoseCarButton:(id)sender{
     [self clickChoseCarButtonNotUniversalButtonImage];
+    _universalTableView.hidden = NO;
+    
 }
 -(IBAction)clickUniversalButton:(id)sender{
     [self clickUniversalButtonImageNotChoseCarButtonNot];
+    _universalTableView.hidden = YES;
+ 
 }
+- (void) didGoodsBrandByCateDataSuccess : (id)data{
+      NSMutableDictionary * dic = [[NSMutableDictionary alloc] init];
+    [dic setValue:@"100" forKey:@"id"];
+    [dic setValue:@"品牌" forKey:@"name"];
+    [dic setValue:(NSArray *)data forKey:@"values"];
+  
+    
+    [typeArray addObject:dic];
+    
+    //    feiLFunction = [[fenLeiFunc alloc] init];
+    
+        feiLFunction.delegateFilterAtrrByCate = self;
+        [feiLFunction getFilterAttrByCategory:_categoryId];
+}
+
+- (void) didGoodsBrandByCateDateFailed : (NSString *)err{
+    
+    
+}
+
+- (void) didFilterAttrByCateDataSuccess : (id)data{
+//    typeArray = [[NSMutableArray alloc] initWithArray:(NSArray*)data];
+    NSArray * array = (NSArray *)data;
+    
+    for (int i = 0; i<array.count; i ++) {
+        NSMutableDictionary * dic = [array objectAtIndex:i ];
+          [typeArray addObject:dic];
+    }
+    
+    NSLog(@"tamarray = %@",typeArray);
+    [self calculateScrollerViewHeight:nil];
+}
+- (void) didFilterAttrByCateDataFailed : (NSString *)err{
+    
+}
+
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView==_typeTableView) {
         if (self.isOpen) {
@@ -227,9 +263,9 @@
     if (tableView==_typeTableView) {
         if (self.isOpen) {
             if (self.selectIndex.section == section) {
-                NSString * rowStr = [NSString stringWithFormat:@"%i",section];
+//                NSString * rowStr = [NSString stringWithFormat:@"%i",section];
                 NSMutableDictionary * dic = [typeArray objectAtIndex:section];
-                NSMutableArray * array = [dic objectForKey:rowStr];
+                NSMutableArray * array = [dic objectForKey:@"values"];
                 return [array count]+1;;
             }
         }
@@ -246,6 +282,7 @@
     if (tableView ==_typeTableView) {
         if (self.isOpen&&self.selectIndex.section == indexPath.section&&indexPath.row!=0) {
             static NSString *CellIdentifier1 = @"TypeClickCell";
+ //           NSString * CellIdentifier1 = [NSString stringWithFormat:@"TypeClickCell%i%i",indexPath.section,indexPath.row];
             TypeClickCell *cell = (TypeClickCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier1];
             
             if (!cell) {
@@ -256,18 +293,31 @@
                 cell.backgroundView = backIamge;
                 
             }
-            NSString * str = [NSString stringWithFormat:@"%i",indexPath.section];
+//            NSString * str = [NSString stringWithFormat:@"%i",indexPath.section];
             NSMutableDictionary * dic = [typeArray objectAtIndex:indexPath.section];
             
-            NSArray *list = [dic objectForKey:str];
+            NSArray *list = [dic objectForKey:@"values"];
             
             cell.indexP = indexPath;
-            cell.titleLabel.text = [list objectAtIndex:indexPath.row-1];
+            NSMutableDictionary * attr_valueDic = [list objectAtIndex:indexPath.row-1];
             
+            cell.titleLabel.text = [attr_valueDic objectForKey:@"attr_value"];
+            NSMutableDictionary * selectDic =[self dataInSelectIndexPathArray:indexPath];
+           
+            if (selectDic ) {
+                 NSString * str =[selectDic objectForKey:@"clickRow"];
+                NSString * indexPathRowStr = [NSString stringWithFormat:@"%i%i",indexPath.section,indexPath.row];
+                if ([str isEqualToString:indexPathRowStr]) {
+                    [cell.clickButton setBackgroundImage:[UIImage imageNamed:@"input_choose_press.png"] forState:UIControlStateNormal];
+                }
+            }
             return cell;
         }else
         {
+           
+            
             static NSString *CellIdentifier = @"TypeCell";
+ //           NSString * CellIdentifier = [NSString stringWithFormat:@"TypeCell%i%i",indexPath.section,indexPath.row];
             TypeCell *cell = (TypeCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
             if (!cell) {
                 cell = [[[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:self options:nil] objectAtIndex:0];
@@ -275,6 +325,8 @@
             cell.backgroundColor = [UIColor colorWithRed:238/255.0 green:238/255.0 blue:238/255.0 alpha:1.0];
             
             NSString * str = [NSString stringWithFormat:@"%i",indexPath.row];
+            NSLog(@"typeArray = %@",typeArray);
+            
             NSMutableDictionary * dic = [typeArray objectAtIndex:indexPath.section];
             
             
@@ -285,13 +337,28 @@
             cell.titleLabel.text = name;
             cell.titleLabel.textColor = [UIColor colorWithRed:129/255.0 green:129/255.0 blue:129/255.0 alpha:1.0];
             UIImage * image =[UIImage imageNamed:@"bg_brand_hot.png"];
-            NSLog(@"name====%@",name);
-            
+      
+           
+            NSMutableDictionary * selectDic =[self dataInSelectIndexPathArray:indexPath];
+            NSLog(@"selectDic====%@",selectDic);
+
+            if (selectDic ) {
+                NSString * str =[selectDic objectForKey:@"selectName"];
+                cell.selectNameLab.text = str;
+                cell.selectNameLab.backgroundColor = COLOR_WITH_RGB(239, 198, 70);
+                
+
+            }else{
+                cell.selectNameLab.text = @"";
+                cell.selectNameLab.backgroundColor = [UIColor clearColor];
+            }
+
             //        [cell showImage:image];
             [cell changeArrowWithUp:([self.selectIndex isEqual:indexPath]?YES:NO)];
             return cell;
         }
     }else{
+        
         static NSString *CellIdentifier = @"UITableViewCell";
         UITableViewCell *cell = (UITableViewCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (!cell) {
@@ -324,21 +391,58 @@
         UIImageView * addIamge = (UIImageView *)[cell viewWithTag:0x3];
         [self setBordForView:cellBackView withBorder:1 withColor:COLOR_WITH_RGB(202, 202, 202)];
         [self setViewCornerRadius:cellBackView withCornerRadius:6];
-         nameLab.text = [universalArray objectAtIndex:indexPath.row];
-       
-        if (indexPath.row ==selectRow) {
+        if (didSelectArray) {
+           nameLab.text=  [self objectInDidSelectArray:indexPath];
             cellBackView.backgroundColor = [UIColor whiteColor];
-           
+            
             addIamge.image = [UIImage imageNamed:@"icon_add1_press.png"];
-        }else
-            addIamge.image = [UIImage imageNamed:@"icon_add1.png"];
+            
+        }else{
+             nameLab.text = [universalArray objectAtIndex:indexPath.row];
+            if (indexPath.row ==selectRow) {
+                cellBackView.backgroundColor = [UIColor whiteColor];
+                
+                addIamge.image = [UIImage imageNamed:@"icon_add1_press.png"];
+            }else
+                addIamge.image = [UIImage imageNamed:@"icon_add1.png"];
+            
 
-          
+        }
+        
+        
         
         NSLog(@"text ==%@",nameLab.text);
         return cell;
     }
     
+}
+-(NSString*)objectInDidSelectArray:(NSIndexPath *)path{
+    NSLog(@"didSelectArray=%@",didSelectArray);
+    for (NSMutableDictionary * dic in didSelectArray) {
+        NSString * key = [NSString stringWithFormat:@"%i",path.row+1];
+        if ([[dic objectForKey:@"key"]isEqualToString:key]) {
+            
+            return [dic objectForKey:@"name"];
+           
+            break;
+        }
+    }
+    return nil;
+    
+    
+}
+-(NSMutableDictionary *)dataInSelectIndexPathArray:(NSIndexPath *)indexPath{
+
+    for (NSMutableDictionary * dic in selectIndexPathArray) {
+        NSString * str =[dic objectForKey:@"indexPathSection"];
+        NSString * sectionStr = [NSString stringWithFormat:@"%i",indexPath.section];
+        if ([str isEqualToString:sectionStr])
+        {
+//            break;
+            return dic;
+        }
+    }
+    return nil;
 }
 -(void)setBordForView:(UIView*)view withBorder:(NSInteger)border withColor:(UIColor*)color{
     //设置layer
@@ -383,17 +487,88 @@
             
         }else
         {
+            NSLog(@"dian");
+            [self didSelectTableViewIndexPath:indexPath];
             
         }
 
     }else{
-        GuolvListViewController * detaileView = [[GuolvListViewController alloc] init];
-//        [self.navigationController pushViewController:detaileView animated:YES];
-        [self presentModalViewController:detaileView animated:YES];
+        
+        if (indexPath.row==0) {
+            GuolvListViewController * detaileView = [[GuolvListViewController alloc] init];
+            detaileView.titleArry = universalArray;
+            detaileView.categoryId = _categoryId;
+            detaileView.delegate = self;
+            //        [self.navigationController pushViewController:detaileView animated:YES];
+            [self presentModalViewController:detaileView animated:YES];
+        }
+       
     }
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+-(void )didFinishSelectTableview:(NSMutableArray *)data{
+    didSelectArray = [[NSMutableArray alloc] initWithArray:data];
+    
+    [_universalTableView reloadData];
+}
+-(void)didSelectTableViewIndexPath:(NSIndexPath *)indexPa{
+    
+    if ([self dataInSelectIndexPathArray:indexPa]) {
+        [self hadDidSelectTableViewIndexPath:indexPa];
+    }else{
+        [self hadNoDidSelectTableViewIndexPath:indexPa];
+    }
+    
+    [_typeTableView reloadData];
+}
 
+-(void)hadNoDidSelectTableViewIndexPath:(NSIndexPath *)indexPa{
+    NSString * str = [NSString stringWithFormat:@"%i",indexPa.section ];
+    NSMutableDictionary * dic =[typeArray objectAtIndex:indexPa.section];
+    
+    NSMutableArray * array =[dic objectForKey:@"values"];
+    NSLog(@"array = %@",array);
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPa.section];
+    
+    TypeCell * typeCe =(TypeCell *) [_typeTableView cellForRowAtIndexPath:indexPath];
+    NSDictionary * textDic = [array objectAtIndex:indexPa.row-1];
+    typeCe.selectNameLab.text = [textDic objectForKey:@"attr_value"];
+    
+    typeCe.selectNameLab.backgroundColor = COLOR_WITH_RGB(186, 145, 17);
+    
+    TypeClickCell * typeclickCe =(TypeClickCell *) [_typeTableView cellForRowAtIndexPath:indexPa];
+    [typeclickCe.clickButton setBackgroundImage:[UIImage imageNamed:@"input_choose_press.png"] forState:UIControlStateNormal];
+    
+    NSMutableDictionary * mutableDic = [[NSMutableDictionary alloc] init];
+    
+    [mutableDic setValue:[textDic objectForKey:@"attr_value"] forKey:@"selectName"];
+    NSString * indexpathRowStr = [NSString stringWithFormat:@"%i%i",indexPa.section,indexPa.row];
+    NSString * indexpathSectionStr = [NSString stringWithFormat:@"%i",indexPa.section];
+    
+    [mutableDic setValue:indexpathRowStr forKey:@"clickRow"];
+    [mutableDic setValue:indexpathSectionStr forKey:@"indexPathSection"];
+    
+    [selectIndexPathArray addObject:mutableDic];
+    
+    NSLog(@"selectIndexPathArray=%@",selectIndexPathArray);
+}
+
+-(void)hadDidSelectTableViewIndexPath:(NSIndexPath *)indexPa{
+   
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPa.section];
+    
+    TypeCell * typeCe =(TypeCell *) [_typeTableView cellForRowAtIndexPath:indexPath];
+    typeCe.selectNameLab.text = @"";
+    
+    typeCe.selectNameLab.backgroundColor =[UIColor clearColor];
+    
+    TypeClickCell * typeclickCe =(TypeClickCell *) [_typeTableView cellForRowAtIndexPath:indexPa];
+    [typeclickCe.clickButton setBackgroundImage:[UIImage imageNamed:@"input_choose.png"] forState:UIControlStateNormal];
+    
+
+    NSMutableDictionary * dic = [self dataInSelectIndexPathArray:indexPa];
+    [selectIndexPathArray removeObject:dic];
+}
 -(void)typeClickCellDelegate:(NSIndexPath *)indexP{
     
     NSLog(@"indexP ====%@",indexP);
@@ -408,11 +583,12 @@
     [_typeTableView beginUpdates];
     
     int section = self.selectIndex.section;
-    NSString * str = [NSString stringWithFormat:@"%i",self.selectIndex.section ];
+    
+//    NSString * str = [NSString stringWithFormat:@"%i",self.selectIndex.section ];
     NSMutableDictionary * dic =[typeArray objectAtIndex:self.selectIndex.section];
     
-    NSMutableArray * array =[dic objectForKey:str];
-    
+    NSMutableArray * array =[dic objectForKey:@"values"];
+    NSLog(@"array======%@",array);
     int contentCount = [array count];
 	NSMutableArray* rowToInsert = [[NSMutableArray alloc] init];
 	for (NSUInteger i = 1; i < contentCount + 1; i++) {
@@ -422,10 +598,12 @@
 	
 	if (firstDoInsert)
     {   [_typeTableView insertRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
+        [self calculateScrollerViewHeight:array];
     }
 	else
     {
         [_typeTableView deleteRowsAtIndexPaths:rowToInsert withRowAnimation:UITableViewRowAnimationTop];
+        [self calculateScrollerViewHeight:nil];
     }
     
     

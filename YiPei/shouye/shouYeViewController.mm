@@ -18,6 +18,27 @@
 #import "shouYeViewController.h"
 
 #import "scannerVinViewController.h"
+#import "ZiDingYiJianPanViewController.h"
+#import "registerViewController.h"
+#import "ShiYongShuoMingViewController.h"
+#import "ZhiFuBangZhuViewController.h"
+#import "LianXiWMenViewController.h"
+
+#import "JinRiFaBuViewController.h"
+
+#import "StrikeThroughLabel.h"
+#import "allConfig.h"
+
+#import "UIHTTPImageView.h"
+
+#import "ShouSuoViewController.h"
+
+#import "ShiftCityViewController.h"
+#import "userDataManager.h"
+#import "YongHuZhongXinViewController.h"
+
+//#import "JianCeGengXinViewController.h"
+
 
 @interface shouYeViewController ()
 
@@ -68,12 +89,24 @@
 @synthesize updateArow=_updateArow;
 @synthesize updateImage=_updateImage;
 
+
+@synthesize cityBT=_cityBT;
+@synthesize cityArrow=_cityArrow;
+@synthesize cityImage=_cityImage;
+@synthesize cityLabel=_cityLabel;
+
+@synthesize debtArrow=_debtArrow;
+@synthesize debtBT=_debtBT;
+@synthesize debtImage=_debtImage;
+@synthesize debtLabel=_debtLabel;
+
 @synthesize leftitem=_leftitem;
 @synthesize rightitem=_rightitem;
 
 @synthesize todayNewData=_todayNewData;
 @synthesize todayDisCountArray =_todayDisCountArray;
 
+@synthesize scrollView=_scrollView;
 
 //@synthesize scanner=_scanner;
 @synthesize progressHud=_progressHud;
@@ -143,14 +176,21 @@
     _searchView.hidden=NO;
     _personalInfoView.hidden=YES;
     
+    [_scrollView addSubview:_personalInfoView];
+    [_scrollView setFrame:CGRectMake(0, 0, 320, __MainScreen_Height-88)];
+    _scrollView.contentSize = CGSizeMake(320, 568);
+//    [_scrollView setContentSize:CGSizeMake(320, 440)];
+    _scrollView.hidden=YES;
+
+    _todayDiscount = [[todayDiscountFunc alloc] init];
+    _todayDiscount.delegate = self;
+    [_todayDiscount getTodayDiscount:@"0" sortPrice:@"0" sortSale:@"0"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _todayDiscount = [[todayDiscountFunc alloc] init];
-    _todayDiscount.delegate = self;
-    [_todayDiscount getTodayDiscount:@"0" sortPrice:@"0" sortSale:@"0"];
+    [self initPressview];
 }
 - (void) didTodayDiscountDataSuccess : (id)data
 {
@@ -215,7 +255,8 @@
 
 //搜索
 -(IBAction)clickSearchBT:(id)sender{
-
+    ShouSuoViewController *search = [[ShouSuoViewController alloc] initWithNibName:@"ShouSuoViewController" bundle:nil];
+    [self.navigationController pushViewController:search animated:YES];
 }
 
 //扫一扫
@@ -245,10 +286,13 @@
         _tableview.hidden=NO;
         _searchView.hidden=NO;
         _personalInfoView.hidden=YES;
+        _scrollView.hidden=YES;
     }else{
         _tableview.hidden=YES;
         _searchView.hidden=YES;
         _personalInfoView.hidden=NO;
+        _scrollView.hidden=NO;
+
     }
 }
 
@@ -258,10 +302,27 @@
     [self updateview:but.tag];
 }
 
+-(IBAction)clickCityBT:(id)sender{
+    ShiftCityViewController *secity = [[ShiftCityViewController alloc] initWithNibName:@"ShiftCityViewController" bundle:nil];
+    [self.navigationController pushViewController:secity animated:YES];
+}
+
+-(IBAction)clickDebtBT:(id)sender{
+    
+}
 //个人中心
 -(IBAction)clickUseNameBT:(id)sender{
     UIButton *but=(UIButton *)sender;
     [self updateview:but.tag];
+    if(![userDataManager  sharedUserDataManager].uID)
+    {
+        registerViewController *reg=[registerViewController sharedregisterViewController];
+        [self.navigationController pushViewController:reg animated:YES];
+    }else
+    {
+        YongHuZhongXinViewController *yonghu = [[YongHuZhongXinViewController alloc] initWithNibName:@"YongHuZhongXinViewController" bundle:nil];
+        [self.navigationController pushViewController:yonghu animated:YES];
+    }
 }
 
 //购物车
@@ -276,18 +337,24 @@
 -(IBAction)clickPaymentBT:(id)sender{
     UIButton *but=(UIButton *)sender;
     [self updateview:but.tag];
+    ZhiFuBangZhuViewController *zfb=[[ZhiFuBangZhuViewController alloc] initWithNibName:@"ZhiFuBangZhuViewController" bundle:nil];
+    [self.navigationController pushViewController:zfb animated:YES];
 }
 
 //使用说明
 -(IBAction)clickInstructionsBt:(id)sender{
     UIButton *but=(UIButton *)sender;
     [self updateview:but.tag];
+    ShiYongShuoMingViewController *zfb=[[ShiYongShuoMingViewController alloc] initWithNibName:@"ShiYongShuoMingViewController" bundle:nil];
+    [self.navigationController pushViewController:zfb animated:YES];
 }
 
 //联系我们
 -(IBAction)clickContactBT:(id)sender{
     UIButton *but=(UIButton *)sender;
     [self updateview:but.tag];
+    LianXiWMenViewController *zfb=[[LianXiWMenViewController alloc] initWithNibName:@"LianXiWMenViewController" bundle:nil];
+    [self.navigationController pushViewController:zfb animated:YES];
 }
 
 //更新
@@ -295,7 +362,62 @@
     UIButton *but=(UIButton *)sender;
     [self updateview:but.tag];
 }
+-(void)initPressview
+{
+        _shouyeBT.backgroundColor=[UIColor clearColor];
+        _shouyeArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _shouyeLabel.textColor=[UIColor whiteColor];
+        _shouyeImage.image=[UIImage imageNamed:@"icon_home.png"];
+    
 
+        _useBT.backgroundColor=[UIColor clearColor];
+        _useArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _useNameLabel.textColor=[UIColor whiteColor];
+        _useImage.image=[UIImage imageNamed:@"icon_user.png"];
+
+
+        _cartBT.backgroundColor=[UIColor clearColor];
+        _cartArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _cartLabel.textColor=[UIColor whiteColor];
+        _cartImage.image=[UIImage imageNamed:@"icon_cart.png"];
+    
+
+        _payBT.backgroundColor=[UIColor clearColor];
+        _payArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _payLabel.textColor=[UIColor whiteColor];
+        _payImage.image=[UIImage imageNamed:@"icon_pay.png"];
+    
+
+        _instructionsBT.backgroundColor=[UIColor clearColor];
+        _instructionsArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _instructionsLabel.textColor=[UIColor whiteColor];
+        _instructionsImage.image=[UIImage imageNamed:@"icon_use.png"];
+    
+
+        _contactBT.backgroundColor=[UIColor clearColor];
+        _contactArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _contactLabel.textColor=[UIColor whiteColor];
+        _contactImage.image=[UIImage imageNamed:@"icon_contact.png"];
+    
+
+        _updateBT.backgroundColor=[UIColor clearColor];
+        _updateArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _updateLabel.textColor=[UIColor whiteColor];
+        _updateImage.image=[UIImage imageNamed:@"icon_update.png"];
+    
+        _cityBT.backgroundColor=[UIColor clearColor];
+        _cityArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _cityLabel.textColor=[UIColor blackColor];
+        _cityImage.image=[UIImage imageNamed:@"icon_update.png"];
+        
+        _debtBT.backgroundColor=[UIColor clearColor];
+        _debtArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _debtLabel.textColor=[UIColor blackColor];
+        _debtImage.image=[UIImage imageNamed:@"icon_update.png"];
+        
+    
+    
+}
 //点击按钮视图的变化
 -(void)updateview:(NSInteger)tag{
     if (tag==1) {
@@ -303,77 +425,55 @@
         _shouyeArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _shouyeLabel.textColor=[UIColor blackColor];
         _shouyeImage.image=[UIImage imageNamed:@"icon_home_press.png"];
-    }else{
-        _shouyeBT.backgroundColor=[UIColor clearColor];
-        _shouyeArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _shouyeLabel.textColor=[UIColor whiteColor];
-        _shouyeImage.image=[UIImage imageNamed:@"icon_home.png"];
     }
     if (tag==2) {
         _useBT.backgroundColor=[UIColor yellowColor];
         _useArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _useNameLabel.textColor=[UIColor blackColor];
         _useImage.image=[UIImage imageNamed:@"icon_user_press.png"];
-    }else{
-        _useBT.backgroundColor=[UIColor clearColor];
-        _useArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _useNameLabel.textColor=[UIColor whiteColor];
-        _useImage.image=[UIImage imageNamed:@"icon_user.png"];
-    }
-    if (tag==3) {
+    }    if (tag==3) {
         _cartBT.backgroundColor=[UIColor yellowColor];
         _cartArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _cartLabel.textColor=[UIColor blackColor];
         _cartImage.image=[UIImage imageNamed:@"icon_cart_press.png"];
-    }else{
-        _cartBT.backgroundColor=[UIColor clearColor];
-        _cartArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _cartLabel.textColor=[UIColor whiteColor];
-        _cartImage.image=[UIImage imageNamed:@"icon_cart.png"];
     }
     if (tag==4) {
         _payBT.backgroundColor=[UIColor yellowColor];
         _payArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _payLabel.textColor=[UIColor blackColor];
         _payImage.image=[UIImage imageNamed:@"icon_pay_press.png"];
-    }else{
-        _payBT.backgroundColor=[UIColor clearColor];
-        _payArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _payLabel.textColor=[UIColor whiteColor];
-        _payImage.image=[UIImage imageNamed:@"icon_pay.png"];
     }
     if (tag==5) {
         _instructionsBT.backgroundColor=[UIColor yellowColor];
         _instructionsArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _instructionsLabel.textColor=[UIColor blackColor];
         _instructionsImage.image=[UIImage imageNamed:@"icon_use_press.png"];
-    }else{
-        _instructionsBT.backgroundColor=[UIColor clearColor];
-        _instructionsArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _instructionsLabel.textColor=[UIColor whiteColor];
-        _instructionsImage.image=[UIImage imageNamed:@"icon_use.png"];
     }
     if (tag==6) {
         _contactBT.backgroundColor=[UIColor yellowColor];
         _contactArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _contactLabel.textColor=[UIColor blackColor];
         _contactImage.image=[UIImage imageNamed:@"icon_contact_press.png"];
-    }else{
-        _contactBT.backgroundColor=[UIColor clearColor];
-        _contactArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _contactLabel.textColor=[UIColor whiteColor];
-        _contactImage.image=[UIImage imageNamed:@"icon_contact.png"];
     }
     if (tag==7) {
         _updateBT.backgroundColor=[UIColor yellowColor];
         _updateArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
         _updateLabel.textColor=[UIColor blackColor];
         _updateImage.image=[UIImage imageNamed:@"icon_update_press.png"];
-    }else{
-        _updateBT.backgroundColor=[UIColor clearColor];
-        _updateArow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
-        _updateLabel.textColor=[UIColor whiteColor];
-        _updateImage.image=[UIImage imageNamed:@"icon_update.png"];
+    }
+    if(tag==8){
+        _cityBT.backgroundColor=[UIColor yellowColor];
+        _cityArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _cityLabel.textColor=[UIColor blackColor];
+        _cityImage.image=[UIImage imageNamed:@"icon_update_press.png"];
+
+    }
+    if(tag==9){
+        _debtBT.backgroundColor=[UIColor yellowColor];
+        _debtArrow.image=[UIImage imageNamed:@"icon_arrow1_right.png"];
+        _debtLabel.textColor=[UIColor blackColor];
+        _debtImage.image=[UIImage imageNamed:@"icon_update_press.png"];
+        
     }
 }
 
@@ -431,7 +531,7 @@
         xingHao = _todayNewData.goods_format;
         yuanjia = _todayNewData.market_price;
         price = _todayNewData.min_price;
-//        imageUrl = _todayNewData.
+        imageUrl = _todayNewData.goods_thumb;
     }
     else if(indexPath.section == 1)
     {
@@ -439,10 +539,13 @@
         name = goods.goods_name;
         xingHao = goods.goods_format;
         price = goods.min_price;
+        imageUrl = goods.goods_thumb;
+
     }
 //    NSImage *image = [[NSImage alloc]initWithContentsOfURL:(NSURL *)];
-//    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-//    
+    UIHTTPImageView *imageView=(UIHTTPImageView *)[spcell viewWithTag:1];
+    [imageView setImageWithURL:[NSURL URLWithString:[[NSString alloc]initWithFormat:@"http://%@/%@",IMAGE_SERVER_ADDR,imageUrl]]];
+    
     UILabel *NameLa=(UILabel *)[spcell viewWithTag:2];
     NameLa.text=name;//@"MANN 空气滤清器";
     NameLa.textColor=[UIColor blackColor];
@@ -455,7 +558,7 @@
     
     UILabel *yuanPrice=(UILabel *)[spcell viewWithTag:5];
     yuanPrice.frame=CGRectMake(yuanPrice.frame.origin.x, 18, yuanPrice.frame.size.width, yuanPrice.frame.size.height);
-    yuanPrice.text=yuanjia;//@"¥92.00";
+    yuanPrice.text=[[NSString alloc] initWithFormat:@"¥%@",yuanjia];//@"¥92.00";
     yuanPrice.hidden=NO;
     yuanPrice.textColor=[UIColor darkGrayColor];
     yuanPrice.font=[UIFont systemFontOfSize:14.0f];
@@ -466,7 +569,7 @@
         priceLabel.frame=CGRectMake(priceLabel.frame.origin.x, 42, priceLabel.frame.size.width, priceLabel.frame.size.height);
     }
     priceLabel.hidden=NO;
-    priceLabel.text=price;//@"¥100.00";
+    priceLabel.text=[[NSString alloc] initWithFormat:@"¥%@",price];//@"¥100.00";
     priceLabel.textColor=[UIColor redColor];
     priceLabel.font=[UIFont systemFontOfSize:15.0f];
     return cell;
@@ -475,11 +578,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0)
     {
-        ProductDetailsViewController *ProductVc=[[ProductDetailsViewController alloc]initWithNibName:@"ProductDetailsViewController" bundle:nil];
-        NSLog(@"section=%d,index=%d",indexPath.section,indexPath.row);
-        todayNew *goods = _todayNewData;
-        ProductVc.pid = @"34";//goods.goods_id;
-        [self.navigationController pushViewController:ProductVc animated:YES];
+        JinRiFaBuViewController *jinri = [[JinRiFaBuViewController alloc] initWithNibName:@"JinRiFaBuViewController" bundle:nil];
+        [self.navigationController  pushViewController:jinri animated:YES];
 
     }
     else if(indexPath.section == 1)
@@ -696,7 +796,7 @@
 //    imageView.contentMode = UIViewContentModeScaleAspectFit;
 //    [self.view addSubview:imageView];
     
-    scannerVinViewController *vin = [[scannerVinViewController alloc] initWithNibName:@"scannerVinViewController" bundle:nil];
+    ZiDingYiJianPanViewController *vin = [[ZiDingYiJianPanViewController alloc] initWithNibName:@"ZiDingYiJianPanViewController" bundle:nil];
     vin.img = image2;
     [self.navigationController pushViewController:vin animated:YES];
     

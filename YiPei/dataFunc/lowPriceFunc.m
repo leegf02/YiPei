@@ -2,69 +2,65 @@
 //  lowPriceFunc.m
 //  YiPei
 //
-//  Created by lee on 13-11-26.
+//  Created by lee on 13-12-3.
 //  Copyright (c) 2013年 lee. All rights reserved.
 //
 
 #import "lowPriceFunc.h"
-#import "model.h"
-#import "userDataManager.h"
+#import "NetCommand.h"
 
 @implementation lowPriceFunc
+@synthesize delegateUpImage;
+@synthesize delegateLow;
 
-@synthesize delegateLowPrice;
-@synthesize delegateUpload;
-
-- (void)getUploadImage:(NSString *)goodsSn
+-(void)getImagePath:(NSData *)image
 {
     NetCommand *command = [[NetCommand alloc] init];
     [command.paramDict setObject:@"CityGoods" forKey:@"m"];
     [command.paramDict setObject:@"uploadImage" forKey:@"a"];
-    [command.paramDict setObject:goodsSn forKey:@"index"];
-    [command execute];
+    
+    [command execute_post:@"uploadfile" img:image];
     if (command.errorCode == 0) {
-        NSLog(@"getUploadImage success!");
-        uploadImageInfo *info = (uploadImageInfo *)command.data;
-        NSLog(@"info=%@",info);
-        if (self.delegateUpload &&[self.delegateUpload respondsToSelector:@selector(didUploadImageDataSuccess:)]) {
-            [self.delegateUpload performSelector:@selector(didUploadImageDataSuccess:) withObject:info];
+        NSLog(@"getCitySite success!");
+        NSArray *path= (NSArray *)command.data;
+        NSLog(@"citys=%@",path);
+        if (self.delegateUpImage &&[self.delegateUpImage respondsToSelector:@selector(didUploadImageDataSuccess:)]) {
+            [self.delegateUpImage performSelector:@selector(didUploadImageDataSuccess:) withObject:path];
         }
     }
     else if (command.errorCode==1) {
-        NSLog(@"getUploadImage err!");
-        if (self.delegateUpload &&[self.delegateUpload respondsToSelector:@selector(didUploadImageDataFailed:)]) {
-            [self.delegateUpload performSelector:@selector(didUploadImageDataFailed:) withObject:command.errorMsg];
+        NSLog(@"getCitySite err!");
+        if (self.delegateUpImage &&[self.delegateUpImage respondsToSelector:@selector(didUploadImageDataFailed:)]) {
+            [self.delegateUpImage performSelector:@selector(didUploadImageDataFailed:) withObject:command.errorMsg];
         }
     }
 }
 
-//调用该接口之前必须验证UID是否是空，空则提示验证
-- (void)getLowPriceNotify:(NSString *)goodID SysPrice:(NSString *)sys Price:(NSString *)p Number:(NSString *)num Rebates:(NSString *)bates Imageurl:(NSString *)url
+-(void)getlowPriceNotify:(NSString *)goodID sysPrice:(NSString *)sPrice bugPrice:(NSString *)bPrice buyNo:(NSString *)num buyRebates:(NSString *)bates imagePath:(NSString *)path userID:(NSString *)uid cityID:(NSString *)city
 {
     NetCommand *command = [[NetCommand alloc] init];
     [command.paramDict setObject:@"CityGoods" forKey:@"m"];
     [command.paramDict setObject:@"lowPriceNotify" forKey:@"a"];
     [command.paramDict setObject:goodID forKey:@"goodsId"];
-    [command.paramDict setObject:goodID forKey:@"sysPrice"];//10进制 小数点后两位
-    [command.paramDict setObject:goodID forKey:@"price"];//10进制 小数点后两位
-    [command.paramDict setObject:goodID forKey:@"number"];
-    [command.paramDict setObject:goodID forKey:@"rebates"];//10进制 小数点后两位
-    [command.paramDict setObject:goodID forKey:@"imgUrl"];
-    [command.paramDict setObject:[userDataManager sharedUserDataManager].cityID forKey:@"city"];
-    [command.paramDict setObject:[userDataManager sharedUserDataManager].uID forKey:@"city"];
+    [command.paramDict setObject:sPrice forKey:@"sysPrice"];
+    [command.paramDict setObject:bPrice forKey:@"price"];
+    [command.paramDict setObject:num forKey:@"number"];
+    [command.paramDict setObject:bates forKey:@"rebates"];
+    [command.paramDict setObject:path forKey:@"imgUrl"];
+    [command.paramDict setObject:uid forKey:@"uid"];
+    [command.paramDict setObject:city forKey:@"city"];
 
     [command execute];
     if (command.errorCode == 0) {
-        NSLog(@"getLowPriceNotify success!");
-        //data    如果失败，返回空，否则新增降价通知记录自增id
-        if (self.delegateLowPrice &&[self.delegateLowPrice respondsToSelector:@selector(didLowPriceNotifyDataSuccess:)]) {
-            [self.delegateLowPrice performSelector:@selector(didLowPriceNotifyDataSuccess:) withObject:command.data];
+        NSLog(@"getlowPriceNotify success!");
+        if (self.delegateLow &&[self.delegateLow respondsToSelector:@selector(didLowPriceNotifyDataSuccess:)]) {
+            [self.delegateLow performSelector:@selector(didLowPriceNotifyDataSuccess:) withObject:nil];
         }
     }
     else if (command.errorCode==1) {
-        NSLog(@"getLowPriceNotify err!");
-        if (self.delegateLowPrice &&[self.delegateLowPrice respondsToSelector:@selector(didLowPriceNotifyDataFailed:)]) {
-            [self.delegateLowPrice performSelector:@selector(didLowPriceNotifyDataFailed:) withObject:command.errorMsg];
+        NSLog(@"getlowPriceNotify err!");
+        if (self.delegateLow &&[self.delegateLow respondsToSelector:@selector(didLowPriceNotifyDataFailed:)]) {
+            [self.delegateLow performSelector:@selector(didLowPriceNotifyDataFailed:) withObject:command.errorMsg];
         }
     }
 }

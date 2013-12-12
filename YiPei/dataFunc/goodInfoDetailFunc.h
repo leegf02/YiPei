@@ -16,5 +16,6 @@
 
 @property(nonatomic, retain)id delegate;
 
-- (void) getGoodInfoDetail:(NSString *)goodID;
+- (void) getGoodInfoDetail:(NSString *)goodsID;
+
 @end

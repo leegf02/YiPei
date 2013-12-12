@@ -96,11 +96,25 @@
     nameArray = [[NSMutableArray alloc]initWithObjects:@"油", @"油1", @"油2", @"油3", @"油4", nil];
     valueArray = [[NSMutableArray alloc]initWithObjects:@"0", @"1", @"2", @"3", @"4", nil];
     
- [_headNav initWithLeftBarItemWithTitle:@"" withFrame:CGRectMake(10, 7, 30, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_list.png"] withHighlighted:nil  withTarget:self];
     
-     [_headNav initWithRightBarItemWithTitle:@"" withFrame:CGRectMake(280,7, 30, 30)  withAction:@selector(rightBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_cart.png"] withHighlighted:nil withTarget:self];
+    _headNav = [[UINavigationView alloc] init];
+    self.navigationItem.leftBarButtonItem=[self setLeftBarButtonItem];
+    self.navigationItem.rightBarButtonItem=[self setRightBarButtonItem];
+    
+    
+// [_headNav initWithLeftBarItemWithTitle:@"" withFrame:CGRectMake(10, 7, 30, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_list.png"] withHighlighted:nil  withTarget:self];
+//    
+//     [_headNav initWithRightBarItemWithTitle:@"" withFrame:CGRectMake(280,7, 30, 30)  withAction:@selector(rightBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_cart.png"] withHighlighted:nil withTarget:self];
+}
+-(UIBarButtonItem*)setLeftBarButtonItem{
+    
+    return  [_headNav setWithLeftBarItemWithFrame:CGRectMake(10, 7, 30, 30)  withAction:@selector(leftBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_list.png"] withHighlighted:nil  withTarget:self];
 }
 
+-(UIBarButtonItem*)setRightBarButtonItem{
+    
+    return  [_headNav setWithLeftBarItemWithFrame:CGRectMake(280,7, 30, 30)  withAction:@selector(rightBarItemClick) withButtonImage:[UIImage imageNamed:@"topbtn_cart.png"] withHighlighted:nil withTarget:self];
+}
 -(void)leftBarItemClick{
     [self.navigationController popViewControllerAnimated:YES];
     

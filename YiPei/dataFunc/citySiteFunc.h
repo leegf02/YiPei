@@ -10,7 +10,7 @@
 #import "dataProcessProtocol.h"
 #import "NetCommand.h"
 
-@interface citySiteFunc : NetCommand
+@interface citySiteFunc : NSObject
 {
     id<dataCitySiteProcessProtocol> delegate;
 }

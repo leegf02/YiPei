@@ -18,6 +18,49 @@
 @implementation todayDiscountommand
 @synthesize data_base;
 @synthesize data_extension;
+- (void)startDown:(NSMutableString *)url {
+    NSString *escapedValue =
+	(NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
+                                                                          nil,
+                                                                          (CFStringRef)url,
+                                                                          NULL,
+                                                                          NULL,
+                                                                          kCFStringEncodingUTF8))
+    ;
+	NSURL *downUrl = [NSURL URLWithString:escapedValue];
+    NSLog(@"%@",downUrl);
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    [request setCacheStoragePolicy:ASICachePermanentlyCacheStoragePolicy];
+    [request setTimeOutSeconds:10];
+    
+    [request startSynchronous];
+    if (![request error]) {
+        @try {
+            if (request.responseStatusCode != 200) {
+                return;
+            }
+            
+            NSString *jsonString = [[NSString alloc] initWithBytes:[request responseData].bytes length:[request responseData].length encoding:NSUTF8StringEncoding];
+            jsonString = [jsonString stringByReplacingOccurrencesOfString:@"null" withString:@"\"\""];
+            
+            NSMutableDictionary *dictionary=[jsonString objectFromJSONString];
+            
+            self.errorCode = [[dictionary objectForKey:@"errorCode"]intValue];
+            self.errorMsg = [dictionary objectForKey:@"errorMsg"];
+            self.data_base = [dictionary objectForKey:@"data"];
+            self.data_extension =[dictionary objectForKey:@"todayNews"];
+        }
+        @catch (NSException * e) {
+            NSLog(@"execute,error=%@",e);
+        }
+        @finally {
+            
+        }
+        
+    }
+
+}
+
 - (void)execute {
 	NSMutableString *reqUrl = [NSMutableString string];
 	[reqUrl appendString:[[NetConfig sharedNetConfig] getDomainDesc]];
@@ -49,31 +92,7 @@
     }
     NSLog(@"reqUrl = %@", reqUrl);
     
-	NSURL *url = [[NSURL alloc] initWithString:reqUrl];
-    
-	NSData *jsonData = [NSData dataWithContentsOfURL:url];
-    
-    
-	@try {
-        NSString *jsonString = [[NSString alloc] initWithBytes:jsonData.bytes length:jsonData.length encoding:NSUTF8StringEncoding];
-        jsonString = [jsonString stringByReplacingOccurrencesOfString:@"null" withString:@"\"\""];
-       
-        NSLog(@"jsonString=%@",jsonString);
-        NSMutableDictionary *dictionary=[jsonString objectFromJSONString];
-        
-        self.errorCode = [[dictionary objectForKey:@"errorCode"]intValue];
-        self.errorMsg = [dictionary objectForKey:@"errorMsg"];
-        self.data_base = [dictionary objectForKey:@"data"];
-        self.data_extension = [dictionary objectForKey:@"todayNews"];
-
-	}
-	@catch (NSException * e) {
-		NSLog(@"execute,error=%@",e);
-	}
-	@finally {
-		
-	}
-	
+    [self startDown:reqUrl];	
 }
 @end
 

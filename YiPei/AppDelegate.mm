@@ -20,6 +20,7 @@
 #import "userDataManager.h"
 #import "model.h"
 
+
 @implementation AppDelegate
 @synthesize shouYeVc=_shouYeVc;
 @synthesize fenLeiVc=_fenLeiVc;
@@ -98,6 +99,8 @@ static AppDelegate *appDelegate=nil;
 //    _tabBarController.delegate = self;
 //    _tabBarController.selectedIndex=1;
 //    _tabBarController.view.frame=CGRectMake(0, 0,320, 460);
+    [[UITabBar appearance] setShadowImage:[[UIImage alloc]init]];
+    [[UITabBar appearance] setBackgroundImage:[[UIImage alloc]init]];
     _tabBarController = [[CustomTabBar alloc] init];
     _tabBarController.viewControllers = [NSArray arrayWithObjects:_shouYeNavCtrl, _fenLeiNavCtrl,_pinPaiNavCtrl,_cheXingNavCtrl, nil];
     _tabBarController.selectedIndex = 0;
@@ -115,18 +118,19 @@ static AppDelegate *appDelegate=nil;
     return YES;
 }
 
+
 -(void)citySelected
 {
     for (UIView *views in self.window.subviews)
     {
         [views removeFromSuperview];
     }
-
-    [self.window addSubview:_tabBarController.view];
     if (_selectCity) {
 		[_selectCity.view removeFromSuperview];
 		_selectCity = nil;
-      	}
+    }
+
+    [self.window addSubview:_tabBarController.view];
 
 //    self.window.rootViewController = _tabBarController;
 

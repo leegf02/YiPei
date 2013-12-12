@@ -3,6 +3,7 @@
 
 #import <Foundation/Foundation.h>
 #import "JSONKit.h"
+
 #import "NetCommand.h"
 #import "allConfig.h"
 #import "NetConfig.h"
@@ -15,6 +16,10 @@
 
 @synthesize paramDict;
 @synthesize isComplete;
+
+//@synthesize request=_request;
+//@synthesize reqform=_reqform;
+//@synthesize delegate;
 
 - (id)init {
 	self = [super init];
@@ -45,19 +50,134 @@
     }
 }
 
+- (void)startDown:(NSMutableString *)url {
+    NSString *escapedValue =
+	(NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
+														 nil,
+														 (CFStringRef)url,
+														 NULL,
+														 NULL,
+														 kCFStringEncodingUTF8))
+	 ;
+	NSURL *downUrl = [NSURL URLWithString:escapedValue];
+    NSLog(@"%@",downUrl);
+    ASIHTTPRequest *request = [[ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]] retain];
+    [request setCacheStoragePolicy:ASICachePermanentlyCacheStoragePolicy];
+    [request setTimeOutSeconds:10];
+    
+    [request startSynchronous];
+    if (![request error]) {
+        @try {
+            if (request.responseStatusCode != 200) {
+                return;
+            }
+            
+            NSString *jsonString = [[NSString alloc] initWithBytes:[request responseData].bytes length:[request responseData].length encoding:NSUTF8StringEncoding];
+            jsonString = [jsonString stringByReplacingOccurrencesOfString:@"null" withString:@"\"\""];
+            
+            NSMutableDictionary *dictionary=[jsonString objectFromJSONString];
+            
+            self.errorCode = [[dictionary objectForKey:@"errorCode"]intValue];
+            self.errorMsg = [dictionary objectForKey:@"errorMsg"];
+            self.data = [dictionary objectForKey:@"data"];
+//            if (self.delegate &&[self.delegate respondsToSelector:@selector(NetCommandDelDidSucc:)]) {
+//                [self.delegate performSelector:@selector(NetCommandDelDidSucc:) withObject:self.data];
+//            }
+        }
+        @catch (NSException * e) {
+            NSLog(@"execute,error=%@",e);
+        }
+        @finally {
+            
+        }
+
+    }
+//    [request setDelegate:self];
+//    [request startAsynchronous];
+}
+
+- (void)execute_post:(NSString *)key img:(NSData *)image {
+    NSMutableString *reqUrl = [NSMutableString string];
+	[reqUrl appendString:[[NetConfig sharedNetConfig] getDomainDesc]];
+	
+	if ([paramDict count] > 0) {
+		NSArray *allkeys = [paramDict allKeys];
+        [reqUrl appendString:@"?"];
+        
+        [reqUrl appendString:@"m"];
+        [reqUrl appendString:@"="];
+        [reqUrl appendString:[paramDict valueForKey:@"m"]];
+        
+        [reqUrl appendString:@"&"];
+        
+        [reqUrl appendString:@"a"];
+        [reqUrl appendString:@"="];
+        [reqUrl appendString:[paramDict valueForKey:@"a"]];
+        
+        for (NSString *key in allkeys) {
+            if (![key isEqualToString:@"m"] && ![key isEqualToString:@"a"]) {
+                [reqUrl appendString:@"&"];
+                [reqUrl appendString:key];
+                [reqUrl appendString:@"="];
+                [reqUrl appendString:[paramDict valueForKey:key]];
+            }
+        }
+    }
+    
+    NSLog(@"reqUrl = %@", reqUrl);
+    [self startDownPost:key httpUrl:reqUrl img:image];
+    
+}
+
+- (void)startDownPost:(NSString*)key httpUrl:(NSMutableString *)url img:(NSData *)image{
+    
+    NSURL *requrl = [[NSURL alloc]initWithString:url];
+    
+    //以表格形式的请求对象
+    
+    ASIFormDataRequest *reqform = [[ASIFormDataRequest alloc]initWithURL:requrl];
+    
+    reqform.delegate =self;
+    
+    reqform.requestMethod = @"POST";//设置请求方式
+    
+    //添加请求内容
+    [reqform addData:data withFileName:[NSString stringWithFormat:@"%d.png",arc4random()] andContentType:@"image/png" forKey:key];
+    //开始异步请求
+    [reqform startSynchronous];
+    if (![reqform error]) {
+        @try {
+            if (reqform.responseStatusCode != 200) {
+                return;
+            }
+            
+            NSString *jsonString = [[NSString alloc] initWithBytes:[reqform responseData].bytes length:[reqform responseData].length encoding:NSUTF8StringEncoding];
+            jsonString = [jsonString stringByReplacingOccurrencesOfString:@"null" withString:@"\"\""];
+            
+            NSMutableDictionary *dictionary=[jsonString objectFromJSONString];
+            
+            self.errorCode = [[dictionary objectForKey:@"errorCode"]intValue];
+            self.errorMsg = [dictionary objectForKey:@"errorMsg"];
+            self.data = [dictionary objectForKey:@"data"];\
+//            if (self.delegate &&[self.delegate respondsToSelector:@selector(NetCommandDelDidSucc:)]) {
+//                [self.delegate performSelector:@selector(NetCommandDelDidSucc:) withObject:self.data];
+//            }
+        }
+        @catch (NSException * e) {
+            NSLog(@"execute,error=%@",e);
+        }
+        @finally {
+            
+        }
+    }
+}
+
 - (void)execute {
 	NSMutableString *reqUrl = [NSMutableString string];
 	[reqUrl appendString:[[NetConfig sharedNetConfig] getDomainDesc]];
-//	[reqUrl appendString:cmdUrl];
 	
 	if ([paramDict count] > 0) {
-//		BOOL isFirst = TRUE;
 		NSArray *allkeys = [paramDict allKeys];
-//		if ([[[UIDevice currentDevice] systemVersion] doubleValue] < 4.0){
-			
-//			NSSortDescriptor *sd1 = [[NSSortDescriptor alloc] initWithKey:@"self" ascending:NO];
-//			NSArray *arrSort = [allkeys sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sd1, nil]];
-//
             [reqUrl appendString:@"?"];
             
             [reqUrl appendString:@"m"];
@@ -71,65 +191,52 @@
             [reqUrl appendString:[paramDict valueForKey:@"a"]];
             
 			for (NSString *key in allkeys) {
-//                if (isFirst) {
-//					isFirst = FALSE;
-//					[reqUrl appendString:@"?"];
-//				} else {
-//					[reqUrl appendString:@"&"];
-//				}
                 if (![key isEqualToString:@"m"] && ![key isEqualToString:@"a"]) {
                     [reqUrl appendString:@"&"];
                     [reqUrl appendString:key];
                     [reqUrl appendString:@"="];
                     [reqUrl appendString:[paramDict valueForKey:key]];
                 }
-
 			}
-//			NSLog(@"1111111111111111111111111111111");
-//		}else {
-//			NSSortDescriptor *sd1 = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:NO];
-//			NSArray *arrSort = [allkeys sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sd1, nil]];
-//			NSLog(@"222222222222222222222222222222");
-//			for (NSString *key in allkeys) {
-//				if (isFirst) {
-//					isFirst = FALSE;
-//					[reqUrl appendString:@"?"];
-//				} else {
-//					[reqUrl appendString:@"&"];
-//				}
-//				[reqUrl appendString:key];
-//				[reqUrl appendString:@"="];
-//				[reqUrl appendString:[paramDict valueForKey:key]];
-//			}
-//		}
-
     }
 
-
     NSLog(@"reqUrl = %@", reqUrl);
-    
-	NSURL *url = [[NSURL alloc] initWithString:reqUrl];
-
-	NSData *jsonData = [NSData dataWithContentsOfURL:url];
-		
-    
-	@try {
-        NSString *jsonString = [[NSString alloc] initWithBytes:jsonData.bytes length:jsonData.length encoding:NSUTF8StringEncoding];
-        jsonString = [jsonString stringByReplacingOccurrencesOfString:@"null" withString:@"\"\""];
-        
-        NSMutableDictionary *dictionary=[jsonString objectFromJSONString];
-        
-        self.errorCode = [[dictionary objectForKey:@"errorCode"]intValue];
-        self.errorMsg = [dictionary objectForKey:@"errorMsg"];
-        self.data = [dictionary objectForKey:@"data"];
-	}
-	@catch (NSException * e) {
-		NSLog(@"execute,error=%@",e);
-	}
-	@finally {
-		
-	}
-	
+    [self startDown:reqUrl];
 }
 
+//- (void)requestFinished:(ASIHTTPRequest *)requestFin
+//{
+//    @try {
+//        if (requestFin.responseStatusCode != 200) {
+//            return;
+//        }
+//
+//        NSString *jsonString = [[NSString alloc] initWithBytes:[requestFin responseData].bytes length:[requestFin responseData].length encoding:NSUTF8StringEncoding];
+//        jsonString = [jsonString stringByReplacingOccurrencesOfString:@"null" withString:@"\"\""];
+//        
+//        NSMutableDictionary *dictionary=[jsonString objectFromJSONString];
+//        
+//        self.errorCode = [[dictionary objectForKey:@"errorCode"]intValue];
+//        self.errorMsg = [dictionary objectForKey:@"errorMsg"];
+//        self.data = [dictionary objectForKey:@"data"];\
+//        if (self.delegate &&[self.delegate respondsToSelector:@selector(NetCommandDelDidSucc:)]) {
+//            [self.delegate performSelector:@selector(NetCommandDelDidSucc:) withObject:self.data];
+//        }
+//	}
+//	@catch (NSException * e) {
+//		NSLog(@"execute,error=%@",e);
+//	}
+//	@finally {
+//
+//    }
+//}
+//
+//- (void)requestFailed:(ASIHTTPRequest *)requestF
+//{
+//    self.errorCode = 1;
+//    self.errorMsg = @"网络错误,请稍后重试";
+//    if (self.delegate &&[self.delegate respondsToSelector:@selector(NetCommandDelDidFailed:)]) {
+//        [self.delegate performSelector:@selector(NetCommandDelDidFailed:) withObject:self.errorMsg];
+//    }
+//}
 @end

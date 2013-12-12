@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface JiangJiaTongZhiViewController : UIViewController<UITextFieldDelegate>
+@interface JiangJiaTongZhiViewController : UIViewController<UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property(nonatomic,strong)IBOutlet UILabel *PriceLabel;//比较价格
 @property(nonatomic,strong)IBOutlet UITextField *caiGouPriceText;//采购价格
@@ -22,7 +21,12 @@
 
 @property(nonatomic,strong)UIButton *leftitem;
 @property(nonatomic,strong)UIButton *rightitem;
+@property(nonatomic,strong) UIImagePickerController * myImagePicker;
+@property(nonatomic,strong) UIImage *uploadImage;
 
+@property(nonatomic,strong) NSString *price;//比较价格
+@property(nonatomic,strong) NSString *pid;//商品ID
+@property(nonatomic,strong) NSString *imagepath;
 
 //返回
 -(IBAction)clickFanHuiBT:(id)sender;

@@ -304,11 +304,13 @@
 //
 //@end
 
-@implementation addGoods2Cart
+@implementation Goods2Cart
 
 @synthesize goodsId;
 @synthesize goodsNumber;
-
+@synthesize goodName;
+@synthesize goodCity;
+@synthesize goodPrice;
 @end
 
 //@implementation searchGoodsQuery
@@ -441,7 +443,34 @@
 @implementation myProfile
 
 @synthesize clients_info;
-@synthesize user_list;
+@synthesize user_pro_info;
+@synthesize client_credit;
+
+@end
+
+
+@implementation clientInfo
+@synthesize name;
+@synthesize logo;
+@synthesize addr;
+@synthesize contact;
+@synthesize tel;
+@synthesize mobile;
+@end
+
+@implementation userProfileInfo
+
+@synthesize user_id;
+@synthesize user_name;
+@synthesize level;
+@synthesize rank_points;
+
+@end
+
+@implementation clientCredit
+
+@synthesize level;
+@synthesize amounts;
 
 @end
 
@@ -452,15 +481,19 @@
 //
 //@end
 
-@implementation myProfileIndex
+@implementation myUsrInfoByPid
 
-@synthesize name;
-@synthesize logo;
-@synthesize country;
-@synthesize province;
+@synthesize user_id;
+@synthesize user_name;
+@synthesize client_id;
 @synthesize city;
+@synthesize company_name;
+@synthesize company_logo;
+@synthesize province;
 @synthesize district;
-@synthesize addr;
+@synthesize company_addres;
+@synthesize mobile;
+@synthesize contact;
 @end
 
 @implementation MyCredit
@@ -497,7 +530,17 @@
 @synthesize cID;
 @end
 
+@implementation MyVerify
 
+@synthesize companyName;
+@synthesize province;
+@synthesize city;
+@synthesize district;
+@synthesize companyAddress;
+@synthesize mobile;
+@synthesize contact;
+@synthesize code;
+@end
 
 
 

@@ -9,6 +9,8 @@
 #import "UINavigationView.h"
 
 @implementation UINavigationView
+@synthesize rightButton = _rightButton;
+@synthesize leftButton = _leftButton;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -28,7 +30,18 @@
     // Drawing code
 }
 */
--(void)initWithLeftBarItemWithTitle:(NSString *)title withFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller{
+-(UIBarButtonItem* )setWithLeftBarItemWithFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller{
+    
+    _leftButton=[[UIButton alloc]initWithFrame:frame] ;
+    _leftButton.backgroundColor=[UIColor clearColor];
+    [_leftButton setImage:image forState:UIControlStateNormal];
+    [_leftButton setImage:highlightedImage forState:UIControlStateHighlighted];
+    [_leftButton addTarget:controller action:action forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem * buttonItem = [[UIBarButtonItem alloc] initWithCustomView:_leftButton];
+    
+    return buttonItem;
+    /*
     UIButton * button = [[UIButton alloc] initWithFrame:frame];
     [button setTitle:title forState:UIControlStateNormal];
     [button setBackgroundImage:image forState:UIControlStateNormal];
@@ -39,9 +52,20 @@
  
     [self addSubview:button];
     [button addTarget:controller action:action forControlEvents:UIControlEventTouchDown];
-    
+    */
 }
--(void)initWithRightBarItemWithTitle:(NSString *)title withFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller{
+-(UIBarButtonItem*)setWithRightBarItemWithFrame:(CGRect)frame withAction:(SEL)action withButtonImage:(UIImage *)image withHighlighted:(UIImage*)highlightedImage withTarget:(UIViewController *)controller{
+    
+    _rightButton=[[UIButton alloc]initWithFrame:frame] ;
+    _rightButton.backgroundColor=[UIColor clearColor];
+    [_rightButton setImage:image forState:UIControlStateNormal];
+    [_rightButton setImage:highlightedImage forState:UIControlStateHighlighted];
+    [_rightButton addTarget:controller action:action forControlEvents:UIControlEventTouchUpInside];
+    
+    UIBarButtonItem * buttonItem = [[UIBarButtonItem alloc] initWithCustomView:_rightButton];
+    
+    return buttonItem;
+    /*
     UIButton * button = [[UIButton alloc] initWithFrame:frame];
     [button setTitle:title forState:UIControlStateNormal];
     if (highlightedImage) {
@@ -51,11 +75,13 @@
     [button setBackgroundImage:image forState:UIControlStateNormal];
 
     [button addTarget:controller action:action forControlEvents:UIControlEventTouchDown];
+     */
 }
 -(void)initWithCenterItemWithTitle:(NSString *)title withFrame:(CGRect)frame  {
     UILabel * lab = [[UILabel alloc] initWithFrame:frame];
     lab.text = title;
     [self addSubview:lab];
 }
+
 
 @end

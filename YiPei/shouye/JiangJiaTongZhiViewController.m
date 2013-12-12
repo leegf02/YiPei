@@ -7,7 +7,9 @@
 //
 
 #import "JiangJiaTongZhiViewController.h"
-
+#import "lowPriceFunc.h"
+#import "MyImageUtils.h"
+#import "userDataManager.h"
 @interface JiangJiaTongZhiViewController ()
 
 @end
@@ -24,6 +26,12 @@
 @synthesize zhaoPian=_zhaoPian;
 @synthesize leftitem=_leftitem;
 @synthesize rightitem=_rightitem;
+@synthesize myImagePicker = _myImagePicker;
+@synthesize uploadImage = _uploadImage;
+
+@synthesize price = _price;
+@synthesize pid=_pid;
+@synthesize imagepath=_imagepath;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -35,8 +43,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    _paiZhaoV.hidden=NO;
-    _zhaoPianV.hidden=YES;
+   
     float height=[[UIScreen mainScreen] bounds].size.height;
     _paiZhaoV.frame=CGRectMake(_paiZhaoV.frame.origin.x, _paiZhaoV.frame.origin.y, _paiZhaoV.frame.size.width, height-283);
     _zhaoPianV.frame=CGRectMake(_zhaoPianV.frame.origin.x, _zhaoPianV.frame.origin.y, _zhaoPianV.frame.size.width, height-283);
@@ -50,6 +57,8 @@
         _BackImage.frame=CGRectMake(28, 5, 267, 204);
         _zhaoPian.frame=CGRectMake(28, 5, 267, 204);
     }
+    
+    _PriceLabel.text = self.price;
 }
 
 
@@ -63,14 +72,75 @@
 
 //完成
 -(void)clickWangChangBT:(id)sender{
+    lowPriceFunc *low = [[lowPriceFunc alloc] init];
+    [low getlowPriceNotify:_pid sysPrice:_price bugPrice:_caiGouPriceText.text buyNo:_caiGouNumber.text buyRebates:_fanDian.text imagePath:_imagepath userID:[userDataManager sharedUserDataManager].uID cityID:[userDataManager sharedUserDataManager].cityID];
+    
+    
+}
+- (void) didLowPriceNotifyDataSuccess : (id)data
+{
+}
+
+- (void) didLowPriceNotifyDataFailed : (NSString *)err
+{
     
 }
 
 //照相按钮
 -(IBAction)ZhaoXiang:(id)sender{
     
+    _myImagePicker = [[UIImagePickerController alloc] init];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        _myImagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        _myImagePicker.delegate = self;
+        _myImagePicker.allowsEditing = YES;
+                [self presentModalViewController:_myImagePicker animated:YES];//show the camera
+    }else{
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:nil message:@"不支持相机" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+        [alert show];
+    }
+
+}
+#pragma mark -UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo{
+    if (image) {
+        //压缩图片
+       
+        _uploadImage = [MyImageUtils scaleImage:image width:265 height:202];
+         _zhaoPianV.hidden=NO;
+       _paiZhaoV.hidden=YES;
+       
+        _zhaoPian.image = image;
+        
+        [self updateHeadImage];
+    }
+        [self dismissModalViewControllerAnimated:YES];
+    _myImagePicker.delegate = nil;
+    _myImagePicker = nil;
+}
+//上传图片
+- (void)updateHeadImage{
+    NSData *imageData = nil;
+    if(!_uploadImage){
+        return;
+    }
+    imageData = UIImagePNGRepresentation(_uploadImage);
+ 
+    if (!imageData) {
+        return;
+    }
+    //    [SVProgressHUD showWithStatus:@"正在提交..."];
+    lowPriceFunc *low = [[lowPriceFunc alloc] init];
+    [low getImagePath:imageData];
 }
 
+- (void) didUploadImageDataSuccess : (id)data{
+    _rightitem.hidden=NO;
+}
+- (void) didUploadImageDataFailed : (NSString *)err
+{
+}
 
 - (void)viewDidLoad
 {
@@ -97,11 +167,24 @@
     [_rightitem setImage:[UIImage imageNamed:@"topbtn_complete_press.png"] forState:UIControlStateHighlighted];
     [_rightitem addTarget:self action:@selector(clickWangChangBT:) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:_rightitem];
-    
+        
+//    _rightitem=[[UIButton alloc]initWithFrame:CGRectMake(270, 14, 30, 30)] ;
+//    _rightitem.tag=3;
+//    _rightitem.backgroundColor=[UIColor clearColor];
+//    [_rightitem setImage:[UIImage imageNamed:@"topbtn_cart.png"] forState:UIControlStateNormal];
+//    [_rightitem setImage:[UIImage imageNamed:@"topbtn_cart_press.png"] forState:UIControlStateHighlighted];
+//    [_rightitem addTarget:self action:@selector(clickShoppingCartBT:) forControlEvents:UIControlEventTouchUpInside];
+//    self.navigationItem.rightBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:_rightitem];
+
+        _rightitem.hidden=YES;
     _caiGouPriceText.delegate=self;
     _caiGouNumber.delegate=self;
     _fanDian.delegate=self;
     }
+    
+    
+    _paiZhaoV.hidden=NO;
+    _zhaoPianV.hidden=YES;
 }
 
 - (void)didReceiveMemoryWarning

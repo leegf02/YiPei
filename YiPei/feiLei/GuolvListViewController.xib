@@ -8,7 +8,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GuolvListViewController">
             <connections>
                 <outlet property="detailTableView" destination="FUY-Yz-FNY" id="X6q-K1-dva"/>
-                <outlet property="headNav" destination="YwV-bW-ahn" id="5T3-ru-2gC"/>
                 <outlet property="nameLab" destination="z1e-E8-kDl" id="b0B-Xw-snA"/>
                 <outlet property="tableHeadView" destination="iHA-q8-FsA" id="l60-ue-pBE"/>
                 <outlet property="view" destination="1" id="3"/>
@@ -19,13 +18,8 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="YwV-bW-ahn" customClass="UINavigationView">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                </view>
                 <view contentMode="scaleToFill" id="iHA-q8-FsA">
-                    <rect key="frame" x="0.0" y="44" width="320" height="44"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="IHz-uX-ofL">
@@ -36,14 +30,14 @@
                             <rect key="frame" x="20" y="4" width="176" height="36"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" red="1" green="0.66642129306498377" blue="0.018674253694081155" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="48" sectionHeaderHeight="22" sectionFooterHeight="22" id="FUY-Yz-FNY">
-                    <rect key="frame" x="0.0" y="88" width="320" height="436"/>
+                    <rect key="frame" x="0.0" y="44" width="320" height="400"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>

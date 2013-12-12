@@ -10,7 +10,6 @@
                 <outlet property="blckView" destination="qGf-QO-aJJ" id="lh7-zF-O9u"/>
                 <outlet property="fenLeiListTableView" destination="VNv-nS-wf5" id="XHF-H3-bi8"/>
                 <outlet property="filterButton" destination="2yz-Ye-BdK" id="O8g-2I-9vc"/>
-                <outlet property="headNav" destination="C9u-dY-99c" id="Ba5-sM-U4g"/>
                 <outlet property="smallTableView" destination="sR0-ef-26R" id="xBS-xX-oFi"/>
                 <outlet property="sortButton" destination="6Fr-42-DWo" id="gdo-BM-c16"/>
                 <outlet property="view" destination="1" id="3"/>
@@ -21,13 +20,8 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="C9u-dY-99c" customClass="UINavigationView">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="VNv-nS-wf5">
-                    <rect key="frame" x="0.0" y="74" width="320" height="568"/>
+                    <rect key="frame" x="0.0" y="30" width="320" height="538"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
@@ -36,7 +30,7 @@
                     </connections>
                 </tableView>
                 <view contentMode="scaleToFill" id="OeU-PW-3iN">
-                    <rect key="frame" x="0.0" y="44" width="320" height="30"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6Fr-42-DWo">

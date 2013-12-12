@@ -153,10 +153,10 @@
 
 @end
 
-@protocol dataProfileIndexProcessProtocol <NSObject>
+@protocol dataGetUserInfoByIdProcessProtocol <NSObject>
 @required
-- (void) didProfileIndexDataSuccess : (id)data;
-- (void) didProfileIndexDataFailed : (NSString *)err;
+- (void) didGetUserInfoByIdDataSuccess : (id)data;
+- (void) didGetUserInfoByIdFailed : (NSString *)err;
 
 @end
 
@@ -167,5 +167,37 @@
 
 @end
 
+@protocol dataGoodsBrandByCateProcessProtocol <NSObject>
+@required
+- (void) didGoodsBrandByCateDataSuccess : (id)data;
+- (void) didGoodsBrandByCateDateFailed : (NSString *)err;
 
+@end
 
+@protocol dataMyBillByMonthProcessProtocol <NSObject>
+@required
+- (void) didMyBillByMonthSuccess : (id)data;
+- (void) didMyBillByMonthFailed : (NSString *)err;
+
+@end
+
+@protocol dataVerifyUserProcessProtocol <NSObject>
+@required
+- (void) didVerifyUserSuccess : (id)data;
+- (void) didVerifyUserFailed : (NSString *)err;
+
+@end
+
+@protocol dataSaveUserProcessProtocol <NSObject>
+@required
+- (void) didSaveUserSuccess : (id)data;
+- (void) didSaveUserFailed : (NSString *)err;
+
+@end
+
+@protocol dataReqionInfoProtocol <NSObject>
+@required
+- (void) didReqionInfoSuccess : (id)data;
+- (void) didReqionInfoFailed : (NSString *)err;
+
+@end

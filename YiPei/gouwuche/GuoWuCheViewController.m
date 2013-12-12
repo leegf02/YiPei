@@ -9,11 +9,15 @@
 #import "GuoWuCheViewController.h"
 #import "AppDelegate.h"
 #import "CustomTabBar.h"
+#import "userInfo.h"
+#import "userDataManager.h"
+#import "JieSuanZhiFuViewController.h"
+#import "gouwucheChooseViewController.h"
+#import "JMWhenTapped.h"
+
 @interface GuoWuCheViewController (){
-    int number;
     BOOL isQuanXuan;
     NSMutableDictionary *selectDictionary;
-    
 
 }
 
@@ -26,12 +30,8 @@
 @synthesize zongJiaLabel=_zongJiaLabel;
 @synthesize shanChuBT=_shanChuBT;
 @synthesize jieSuanBT=_jieSuanBT;
-@synthesize queDingView=_queDingView;
-@synthesize JiaNumBT=_JiaNumBT;
-@synthesize JianNumBT=_JianNumBT;
-@synthesize geShu=_geShu;
-@synthesize quexiaoBT=_quexiaoBT;
-@synthesize quDingBT=_quDingBT;
+
+@synthesize tableArray=_tableArray;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,19 +43,10 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    _queDingView.hidden=YES;
-    number=1;
-    isQuanXuan=YES;
-    _geShu.text=[NSString stringWithFormat:@"%d",number];
+     isQuanXuan=YES;
      [_quanXuanBT setBackgroundImage:[UIImage imageNamed:@"cart_input_choose_press.png"] forState:UIControlStateNormal];
-    for (int i=0; i<10; i++) {
-        NSString *keyid=[NSString stringWithFormat:@"%d",i];
-        [selectDictionary setObject:@"1" forKey:keyid];
-    }
+
 }
-
-
-
 
 - (void)viewDidLoad
 {
@@ -78,16 +69,23 @@
     self.navigationItem.leftBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:_leftitem];
 
     float height=[[UIScreen mainScreen] bounds].size.height-20;
-    _tableview.frame=CGRectMake(0, 35, 320, height-40-90);
-    _infoView.frame=CGRectMake(0,height-90-40, 320, 90);
+    _tableview.frame=CGRectMake(0, 35, 320, height-90-40-35);
+    _infoView.frame=CGRectMake(0,height-90-40-35, 320, 90);
     
-    _queDingView.hidden=YES;
     _tableview.delegate=self;
     _tableview.dataSource=self;
     _tableview.backgroundColor=[UIColor clearColor];
     _tableview.separatorColor=[UIColor lightGrayColor];
     _tableview.rowHeight=125;
     selectDictionary=[[NSMutableDictionary alloc]init];
+    
+    userInfo *user = [[userInfo alloc] init];
+    _tableArray = [user getMyCartArr];
+    for (int i=0; i<[_tableArray count]; i++) {
+        NSString *keyid=[NSString stringWithFormat:@"%d",i];
+        [selectDictionary setObject:@"1" forKey:keyid];
+    }
+    [self updateTotalPrice];
 }
 
 
@@ -113,52 +111,49 @@
             [selectDictionary setObject:@"1" forKey:keyid];
         }
     }
+    [self updateTotalPrice];
     [_tableview reloadData];
 }
 
 //删除
 -(IBAction)clickshanChuBT:(id)sender{
-
+    userInfo *info=[[userInfo alloc] init];
+    for (int i=0; i<[_tableArray count]; i++) {
+        if ([[selectDictionary objectForKey:[NSString stringWithFormat:@"%d",i]] isEqualToString:@"1"])
+        {
+            Goods2Cart *goods = (Goods2Cart *)[_tableArray objectAtIndex:i];
+            [info deleteFromMyCart:goods.goodsId];
+        }
+    }
+    _tableArray = [info getMyCartArr];
+    [self updateTotalPrice];
+    [_tableview reloadData];
 }
 
 //结算
 -(IBAction)clickjieSuanBT:(id)sender{
-    _queDingView.hidden=NO;
-
-}
-
-//加
--(IBAction)clickJiaNumBT:(id)sender{
-    number=number+1;
-    _geShu.text=[NSString stringWithFormat:@"%d",number];
-
-}
-
-//减
--(IBAction)clickJianNumBT:(id)sender{
-    if (number==1) {
-        _JianNumBT.userInteractionEnabled=NO;
-        [_JianNumBT setBackgroundImage:[UIImage imageNamed:@"probtn_sub_disable.png"] forState:UIControlStateNormal];
-        return;
+    JieSuanZhiFuViewController *buy = [[JieSuanZhiFuViewController alloc]initWithNibName:@"JieSuanZhiFuViewController" bundle:nil];
+    NSMutableArray *goodArr = [[NSMutableArray alloc] init];
+    for (int i=0; i<[_tableArray count]; i++) {
+        if ([[selectDictionary objectForKey:[NSString stringWithFormat:@"%d",i]] isEqualToString:@"1"])
+        {
+            [goodArr addObject:[_tableArray objectAtIndex:i]];
+        }
     }
-    [_JianNumBT setBackgroundImage:[UIImage imageNamed:@"probtn_sub.png"] forState:UIControlStateNormal];
-    number=number-1;
-    _geShu.text=[NSString stringWithFormat:@"%d",number];
+    buy.jieArray = goodArr;
+    [self.navigationController pushViewController:buy animated:YES];
+}
 
-}
-//取消
--(IBAction)clickquexiaoBT:(id)sender{
-_queDingView.hidden=YES;
-}
-//确定
--(IBAction)clickquDingBT:(id)sender{
-_queDingView.hidden=YES;
-}
 
 //是否选中
 -(void)selectShangping:(id)sender{
-    UIButton *but=(UIButton *)sender;
-    UITableViewCell* cell = (UITableViewCell* )but.superview.superview;
+    UITableViewCell* cell ;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
+        cell = (UITableViewCell*)[[[sender superview] superview] superview];
+    }
+    else{
+        cell = (UITableViewCell* )[[sender superview] superview];
+    }
     NSIndexPath *index = [_tableview indexPathForCell:cell];
     NSString *str=[selectDictionary objectForKey:[NSString stringWithFormat:@"%d",index.row]];
     if ([str isEqualToString:@"1"]) {
@@ -166,6 +161,7 @@ _queDingView.hidden=YES;
     }else{
          [selectDictionary setObject:@"1" forKey:[NSString stringWithFormat:@"%d",index.row]];
     }
+    [self updateTotalPrice];
     [_tableview reloadData];
 }
 
@@ -173,7 +169,7 @@ _queDingView.hidden=YES;
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 10;
+    return [_tableArray count];
 }
 
 
@@ -181,10 +177,10 @@ _queDingView.hidden=YES;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
      NSString *identifier =[NSString stringWithFormat: @"mycell%d",indexPath.row];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: identifier];
-    cell.backgroundColor=[UIColor clearColor];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.backgroundColor=[UIColor clearColor];
     }
     UIView *spcell = [cell viewWithTag:1001];
     if (spcell==nil) {
@@ -193,11 +189,13 @@ _queDingView.hidden=YES;
         spcell.backgroundColor=[UIColor clearColor];
         [cell addSubview:spcell];
     }
-    //UIImageView *imgeview=(UIImageView *)[spcell viewWithTag:1];
+    UIImageView *imgeview=(UIImageView *)[spcell viewWithTag:1];
+    Goods2Cart *goods = (Goods2Cart *)[_tableArray objectAtIndex:indexPath.row];
     
+    imgeview.image = [[userDataManager sharedUserDataManager] getDownImageByPid:goods.goodsId];
     
     UILabel *NameLa=(UILabel *)[spcell viewWithTag:2];
-    NameLa.text=@"MANN 空气滤清器";
+    NameLa.text = goods.goodName;//@"MANN 空气滤清器";
     
     UIButton *button=(UIButton *)[spcell viewWithTag:3];
     [button addTarget:self action:@selector(selectShangping:) forControlEvents:UIControlEventTouchUpInside];
@@ -207,27 +205,88 @@ _queDingView.hidden=YES;
         [button setBackgroundImage:[UIImage imageNamed:@"cart_input_choose.png"] forState:UIControlStateNormal];
     }
 
-    UILabel *xingHaoLa=(UILabel *)[spcell viewWithTag:4];
-    xingHaoLa.text=@"美孚（ow-40）sn 1l装";
+//    UILabel *xingHaoLa=(UILabel *)[spcell viewWithTag:4];
+//    xingHaoLa.text=@"美孚（ow-40）sn 1l装";
     
     UILabel *danjiaLa=(UILabel *)[spcell viewWithTag:5];
-    danjiaLa.text=@"¥120.00";
+    danjiaLa.text=goods.goodPrice;//@"¥120.00";
     
     UILabel *zongjiaLa=(UILabel *)[spcell viewWithTag:6];
-    zongjiaLa.text=@"120.00";
+    zongjiaLa.text=[[NSString alloc]initWithFormat:@"%d",(int)[goods.goodPrice intValue]*[goods.goodsNumber intValue]];//@"120.00";
     
     UILabel *numberLa=(UILabel *)[spcell viewWithTag:7];
-    numberLa.text=[NSString stringWithFormat:@"1"];
+    numberLa.text = goods.goodsNumber ;
+    [numberLa whenTapped:^{
+        UITableViewCell* cell ;
+        
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
+            cell = (UITableViewCell*)[[[numberLa superview] superview] superview];
+        }
+        else{
+            cell = (UITableViewCell* )[[numberLa superview] superview];
+        }
+        selectIndex = [_tableview indexPathForCell:cell];
+        Goods2Cart *goods = (Goods2Cart *)[_tableArray objectAtIndex:selectIndex.row];
+        gouwucheChooseViewController *gwc = [[gouwucheChooseViewController alloc] initWithNibName:@"gouwucheChooseViewController" bundle:nil];
+        gwc.goods = goods;
+        gwc.delegate=self;
+        [self presentModalViewController:gwc animated:YES];
+    }];
+//    UIButton *btn = (UIButton *)[spcell viewWithTag:8];
+//    [btn addTarget:self action:@selector(clickAddDel:) forControlEvents:UIControlEventTouchUpInside];
+//    btn.titleLabel.text = goods.goodsNumber;
     return cell ;
 }
 
 
+-(void)updateTotalPrice
+{
+    int TotalPrice = 0;
+    for (int i=0; i<[_tableArray count]; i++) {
+         if ([[selectDictionary objectForKey:[NSString stringWithFormat:@"%d",i]] isEqualToString:@"1"])
+         {
+             Goods2Cart *goods = (Goods2Cart *)[_tableArray objectAtIndex:i];
+             TotalPrice += [goods.goodPrice intValue]*[goods.goodsNumber intValue];
+         }
+    }
+    _zongJiaLabel.text=[[NSString alloc] initWithFormat:@"%d",TotalPrice];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+{
+}
+
+-(IBAction)clickAddDel:(id)sender
+{
+    UITableViewCell* cell ;
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
+        cell = (UITableViewCell*)[[[sender superview] superview] superview];
+    }
+    else{
+        cell = (UITableViewCell* )[[sender superview] superview];
+    }
+    selectIndex = [_tableview indexPathForCell:cell];
+    Goods2Cart *goods = (Goods2Cart *)[_tableArray objectAtIndex:selectIndex.row];
+    gouwucheChooseViewController *gwc = [[gouwucheChooseViewController alloc] initWithNibName:@"gouwucheChooseViewController" bundle:nil];
+    gwc.goods = goods;
+    gwc.delegate=self;
+    [self presentModalViewController:gwc animated:YES];
+}
 
 
-
-
-
-
+-(void)updateGoodsNum:(Goods2Cart *)goods
+{
+    for (Goods2Cart *local in _tableArray) {
+        if ([goods.goodsId isEqualToString:local.goodsId] &&[goods.goodName isEqualToString:local.goodName]) {
+            local.goodsNumber = goods.goodsNumber;
+            userInfo *user = [[userInfo alloc] init];
+            [user updateToCartDB:local];
+        }
+    }
+    [_tableview reloadData];
+    [self updateTotalPrice];
+}
 
 
 - (void)didReceiveMemoryWarning

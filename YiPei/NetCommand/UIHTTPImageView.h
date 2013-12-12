@@ -7,5 +7,6 @@
 }
 
 - (void)setImageWithURL:(NSURL *)url;
+//- (void)setImageWithURL:(NSURL *)url PID:(NSString *)pid;
 
 @end
